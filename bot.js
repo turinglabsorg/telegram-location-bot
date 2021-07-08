@@ -2,10 +2,10 @@ const { Telegraf } = require('telegraf')
 require('dotenv').config()
 const axios = require('axios')
 const fs = require('fs')
-const StormDB = require("stormdb")
-const engine = new StormDB.localFileEngine("./reports");
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
+const express = require('express')
+const StaticMaps = require('staticmaps')
 
 console.log('INIT MONGODB..')
 const reportSchema = new mongoose.Schema({
@@ -29,7 +29,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN)
 const reports = {}
 
 bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.on('sticker', (ctx) => ctx.reply('👍'))
+
+bot.start((ctx) => ctx.reply('Welcome, this is a map bot!'))
 
 bot.on('location', async (ctx) => {
     const user = ctx.update.message.from.id
@@ -81,7 +82,77 @@ bot.on('photo', (ctx) => {
     })
 })
 
-bot.hears('hi', (ctx) => ctx.reply('Hey there!'))
+bot.command('map', async (ctx) => {
+    const reports = await reportModel.find()
+    const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
+
+    const map = new StaticMaps({
+        width: 600,
+        height: 400
+    });
+
+    const marker = {
+        img: `./marker.png`,
+        offsetX: 24,
+        offsetY: 48,
+        width: 48,
+        height: 48
+    };
+    for (let k in reports) {
+        marker.coord = reports[k].location.coordinates;
+        map.addMarker(marker);
+    }
+    map.render()
+        .then(() => map.image.save(mapImg))
+        .then(() => {
+            ctx.replyWithPhoto({ source: mapImg });
+        })
+        .catch((e) => {
+            console.log(e)
+            ctx.reply('Can\'t render map!')
+        });
+})
 
 bot.launch()
 console.log('BOT STARTED!')
+
+console.log('STARTING EXPRESS')
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+    res.send('Bot Works!')
+})
+
+app.get('/map', async (req, res) => {
+    const reports = await reportModel.find()
+    const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
+
+    const map = new StaticMaps({
+        width: 600,
+        height: 400
+    });
+
+    const marker = {
+        img: `./marker.png`,
+        offsetX: 24,
+        offsetY: 48,
+        width: 48,
+        height: 48
+    };
+    for (let k in reports) {
+        marker.coord = reports[k].location.coordinates;
+        map.addMarker(marker);
+    }
+    map.render()
+        .then(() => map.image.save(mapImg))
+        .then(() => { res.sendFile(mapImg) })
+        .catch((e) => {
+            console.log(e)
+            res.send('CAN\'T RENDER MAP')
+        });
+})
+
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
