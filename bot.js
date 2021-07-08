@@ -4,8 +4,25 @@ const axios = require('axios')
 const fs = require('fs')
 const StormDB = require("stormdb")
 const engine = new StormDB.localFileEngine("./reports");
-const db = new StormDB(engine);
-db.default({ reports: [] });
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
+
+console.log('INIT MONGODB..')
+const reportSchema = new mongoose.Schema({
+    photo: String,
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    }
+});
+const reportModel = mongoose.model('report', reportSchema);
 
 console.log('STARTING BOT..')
 const bot = new Telegraf(process.env.BOT_TOKEN)
@@ -14,14 +31,22 @@ const reports = {}
 bot.help((ctx) => ctx.reply('Send me a sticker'))
 bot.on('sticker', (ctx) => ctx.reply('👍'))
 
-bot.on('location', (ctx) => {
+bot.on('location', async (ctx) => {
     const user = ctx.update.message.from.id
     console.log('RECEIVED LOCATION', ctx.update.message.location);
     if (reports[user] !== undefined) {
         reports[user].location = ctx.update.message.location;
+        const report = new reportModel();
+        report.photo = reports[user].photo
+        report.location = {
+            "type": "Point",
+            "coordinates": [
+                ctx.update.message.location.longitude,
+                ctx.update.message.location.latitude
+            ]
+        }
+        await report.save();
         console.log(reports[user])
-        db.get("reports").push(reports[user]);
-        db.save();
         ctx.reply('Well done!')
     } else {
         ctx.reply('Send a photo first!')
