@@ -1,5 +1,4 @@
 const { Telegraf } = require('telegraf')
-const { MenuTemplate, MenuMiddleware } = require('telegraf-inline-menu')
 require('dotenv').config()
 
 console.log('STARTING BOT..')
