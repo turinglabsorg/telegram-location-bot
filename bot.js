@@ -19,6 +19,9 @@ const reportSchema = new mongoose.Schema({
         coordinates: {
             type: [Number],
             required: true
+        },
+        timestamp: {
+            type: Number
         }
     }
 });
@@ -46,6 +49,7 @@ bot.on('location', async (ctx) => {
                 ctx.update.message.location.latitude
             ]
         }
+        report.timestamp = new Date.getTime()
         await report.save();
         console.log(reports[user])
         ctx.reply('Well done!')
@@ -111,6 +115,11 @@ bot.command('map', async (ctx) => {
             console.log(e)
             ctx.reply('Can\'t render map!')
         });
+})
+
+bot.command('position', async (ctx) => {
+    const reports = await reportModel.findOne({ timestamp: -1 })
+    ctx.tg.sendLocation(ctx.chat.id, '11.120310', '76.119350')
 })
 
 bot.launch()
