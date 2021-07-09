@@ -57,31 +57,35 @@ bot.help((ctx) => ctx.reply(help))
 bot.start((ctx) => ctx.reply(help))
 
 bot.on('photo', (ctx) => {
-    const user = ctx.update.message.from.id
-    if (reports[user] === undefined) {
-        reports[user] = {
-            photo: "",
-            location: {}
+    try {
+        const user = ctx.update.message.from.id
+        if (reports[user] === undefined) {
+            reports[user] = {
+                photo: "",
+                location: {}
+            }
         }
-    }
-    const fileId = ctx.update.message.photo[3].file_id
-    console.log('RECEIVED PICTURE', fileId);
-    ctx.telegram.getFileLink(fileId).then(url => {
-        url = url.href
-        console.log(url)
-        axios({ url, responseType: 'stream' }).then(response => {
-            return new Promise((resolve, reject) => {
-                response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
-                    .on('finish', () => {
-                        reports[user].photo = fileId + '.jpg'
-                        ctx.reply('Ok, ora invia la tua 📍 posizione, così da poter accoppiare la fotografia!')
-                    })
-                    .on('error', e => {
-                        ctx.reply('Please retry the upload of the photo..')
-                    })
-            });
+        const fileId = ctx.update.message.photo[3].file_id
+        console.log('RECEIVED PICTURE', fileId);
+        ctx.telegram.getFileLink(fileId).then(url => {
+            url = url.href
+            console.log(url)
+            axios({ url, responseType: 'stream' }).then(response => {
+                return new Promise((resolve, reject) => {
+                    response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
+                        .on('finish', () => {
+                            reports[user].photo = fileId + '.jpg'
+                            ctx.reply('Ok, ora invia la tua 📍 posizione, così da poter accoppiare la fotografia!')
+                        })
+                        .on('error', e => {
+                            ctx.reply('Please retry the upload of the photo..')
+                        })
+                });
+            })
         })
-    })
+    } catch (e) {
+        ctx.reply("E' successo qualcosa di strano..-riprova!")
+    }
 })
 
 bot.on('video', (ctx) => {
@@ -89,63 +93,71 @@ bot.on('video', (ctx) => {
 })
 
 bot.on('location', async (ctx) => {
-    const user = ctx.update.message.from.id
-    console.log('RECEIVED LOCATION', ctx.update.message.location);
-    if (reports[user] !== undefined) {
-        const reportModel = mongoose.model('report', reportSchema);
-        reports[user].location = ctx.update.message.location;
-        const report = new reportModel();
-        report.photo = reports[user].photo
-        report.location = {
-            "type": "Point",
-            "coordinates": [
-                ctx.update.message.location.longitude,
-                ctx.update.message.location.latitude
-            ]
+    try {
+        const user = ctx.update.message.from.id
+        console.log('RECEIVED LOCATION', ctx.update.message.location);
+        if (reports[user] !== undefined) {
+            const reportModel = mongoose.model('report', reportSchema);
+            reports[user].location = ctx.update.message.location;
+            const report = new reportModel();
+            report.photo = reports[user].photo
+            report.location = {
+                "type": "Point",
+                "coordinates": [
+                    ctx.update.message.location.longitude,
+                    ctx.update.message.location.latitude
+                ]
+            }
+            report.approved = false
+            reports[user] = {
+                photo: "",
+                location: {}
+            }
+            report.timestamp = new Date().getTime()
+            await report.save();
+            ctx.reply(`🎉🎉🎉 Ben fatto!! Continua così, le tue segnalazioni sono importanti, continua a farne!`)
+        } else {
+            ctx.reply('Invia una foto prima!')
         }
-        report.approved = false
-        reports[user] = {
-            photo: "",
-            location: {}
-        }
-        report.timestamp = new Date().getTime()
-        await report.save();
-        ctx.reply(`🎉🎉🎉 Ben fatto!! Continua così, le tue segnalazioni sono importanti, continua a farne!`)
-    } else {
-        ctx.reply('Invia una foto prima!')
+    } catch (e) {
+        ctx.reply("E' successo qualcosa di strano..-riprova!")
     }
 })
 
 bot.command('mappa', async (ctx) => {
-    const reportModel = mongoose.model('report', reportSchema);
-    const reports = await reportModel.find()
-    const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
+    try {
+        const reportModel = mongoose.model('report', reportSchema);
+        const reports = await reportModel.find()
+        const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
 
-    const map = new StaticMaps({
-        width: 600,
-        height: 400
-    });
-
-    const marker = {
-        img: `./marker.png`,
-        offsetX: 24,
-        offsetY: 48,
-        width: 48,
-        height: 48
-    };
-    for (let k in reports) {
-        marker.coord = reports[k].location.coordinates;
-        map.addMarker(marker);
-    }
-    map.render()
-        .then(() => map.image.save(mapImg))
-        .then(() => {
-            ctx.replyWithPhoto({ source: mapImg });
-        })
-        .catch((e) => {
-            console.log(e)
-            ctx.reply('Can\'t render map!')
+        const map = new StaticMaps({
+            width: 600,
+            height: 400
         });
+
+        const marker = {
+            img: `./marker.png`,
+            offsetX: 24,
+            offsetY: 48,
+            width: 48,
+            height: 48
+        };
+        for (let k in reports) {
+            marker.coord = reports[k].location.coordinates;
+            map.addMarker(marker);
+        }
+        map.render()
+            .then(() => map.image.save(mapImg))
+            .then(() => {
+                ctx.replyWithPhoto({ source: mapImg });
+            })
+            .catch((e) => {
+                console.log(e)
+                ctx.reply('Can\'t render map!')
+            });
+    } catch (e) {
+        ctx.reply("E' successo qualcosa di strano..-riprova!")
+    }
 })
 
 bot.launch()
@@ -154,40 +166,14 @@ app.get('/', (req, res) => {
     res.send('Bot Works!')
 })
 
-app.get('/map', async (req, res) => {
-    const reportModel = mongoose.model('report', reportSchema);
-    const reports = await reportModel.find()
-    const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
-
-    const map = new StaticMaps({
-        width: 600,
-        height: 400
-    });
-
-    const marker = {
-        img: `./marker.png`,
-        offsetX: 24,
-        offsetY: 48,
-        width: 48,
-        height: 48
-    };
-    for (let k in reports) {
-        marker.coord = reports[k].location.coordinates;
-        map.addMarker(marker);
-    }
-    map.render()
-        .then(() => map.image.save(mapImg))
-        .then(() => { res.sendFile(mapImg) })
-        .catch((e) => {
-            console.log(e)
-            res.send('CAN\'T RENDER MAP')
-        });
-})
-
 app.get('/markers', async (req, res) => {
-    const reportModel = mongoose.model('report', reportSchema);
-    const reports = await reportModel.find({ approved: true })
-    res.send(reports)
+    try {
+        const reportModel = mongoose.model('report', reportSchema);
+        const reports = await reportModel.find({ approved: true })
+        res.send(reports)
+    } catch (e) {
+        res.send("E' successo qualcosa di strano..-riprova!")
+    }
 })
 
 app.listen(port, () => {
