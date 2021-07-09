@@ -31,7 +31,7 @@ export default {
   name: "Home",
   async mounted() {
     // Downloading data from API
-    const markersDB = await axios.get("http://localhost:3000/markers");
+    const markersDB = await axios.get(process.env.VUE_APP_API_URL + "/markers");
     // Init map object
     const map = new window.google.maps.Map(document.getElementById("map"), {
       center: { lat: 36.925935, lng: 14.739502 },
@@ -51,7 +51,9 @@ export default {
       const infowindow = new window.google.maps.InfoWindow({
         content:
           `<div>
-          <img src="http://localhost:3000/` +
+          <img src="` +
+          process.env.VUE_APP_API_URL +
+          "/" +
           marker.photo +
           `" width="100%"><br><br>
           Aggiunta in data: ` +

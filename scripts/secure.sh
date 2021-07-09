@@ -22,11 +22,6 @@ if [ $# -eq 0 ]
           server_name $1;
           root /var/www/html/ui/dist;
 
-          location / {
-            autoindex on;
-            index.html;
-          }
-
           listen 80;
         }" > "/etc/nginx/sites-enabled/default"
 
