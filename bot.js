@@ -92,6 +92,10 @@ bot.on('photo', (ctx) => {
     })
 })
 
+bot.on('video', (ctx) => {
+    ctx.reply('We only accept photos!')
+})
+
 bot.command('map', async (ctx) => {
     const reports = await reportModel.find()
     const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
