@@ -31,6 +31,7 @@ console.log('STARTING TELEGRAF..')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 const app = express()
 app.use(cors())
+app.use(express.static('photos'));
 const port = 3000
 const reports = {}
 
