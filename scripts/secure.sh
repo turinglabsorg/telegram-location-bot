@@ -20,7 +20,7 @@ if [ $# -eq 0 ]
         
         server {
           server_name $1;
-          root /var/www/data;
+          root /var/www/html/ui/dist;
 
           location / {
             autoindex on;
