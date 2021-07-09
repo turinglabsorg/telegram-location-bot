@@ -21,7 +21,8 @@ const reportSchema = new mongoose.Schema({
             required: true
         }
     },
-    timestamp: Number
+    timestamp: Number,
+    approved: Boolean
 });
 const reportModel = mongoose.model('report', reportSchema);
 
@@ -38,31 +39,20 @@ if(!fs.existsSync('./maps')){
     fs.mkdirSync('./maps')
 }
 
-bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.start((ctx) => ctx.reply('Welcome, this is a map bot!'))
+const help = `Ciao! Io sono Munnizza-Alert, il bot che popolerà un grande database di tutte le discariche abusive in Sicilia!
+Si tratta di un'iniziativa congiunta di associazioni del territorio per denunciare questo grande problema, dai anche tu una mano!
 
-bot.on('location', async (ctx) => {
-    const user = ctx.update.message.from.id
-    console.log('RECEIVED LOCATION', ctx.update.message.location);
-    if (reports[user] !== undefined) {
-        reports[user].location = ctx.update.message.location;
-        const report = new reportModel();
-        report.photo = reports[user].photo
-        report.location = {
-            "type": "Point",
-            "coordinates": [
-                ctx.update.message.location.longitude,
-                ctx.update.message.location.latitude
-            ]
-        }
-        report.timestamp = new Date().getTime()
-        await report.save();
-        console.log(reports[user])
-        ctx.reply('Well done!')
-    } else {
-        ctx.reply('Send a photo first!')
-    }
-})
+Come fare?
+1) 📷 Inizia inviandomi una fotografia di una discarica
+2) 📍 Invia subito dopo la tua posizione
+3) 🚀 Condividi la /mappa e questo bot con tutti i tuoi contatti!
+
+Non ti preoccupare, le segnalazioni sono anonime, non registriamo nessun dato riguardante il tuo dispositivo o il tuo numero di cellulare.
+Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: https://github.com/yomi-digital/munnizzafree-bot
+`
+
+bot.help((ctx) => ctx.reply(help))
+bot.start((ctx) => ctx.reply(help))
 
 bot.on('photo', (ctx) => {
     const user = ctx.update.message.from.id
@@ -82,7 +72,7 @@ bot.on('photo', (ctx) => {
                 response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
                     .on('finish', () => {
                         reports[user].photo = fileId + '.jpg'
-                        ctx.reply('Now send your location..')
+                        ctx.reply('Ok, ora invia la tua 📍 posizione, così da poter accoppiare la fotografia!')
                     })
                     .on('error', e => {
                         ctx.reply('Please retry the upload of the photo..')
@@ -93,10 +83,37 @@ bot.on('photo', (ctx) => {
 })
 
 bot.on('video', (ctx) => {
-    ctx.reply('We only accept photos!')
+    ctx.reply('Ci dispiace, accettiamo solamente fotografie.')
 })
 
-bot.command('map', async (ctx) => {
+bot.on('location', async (ctx) => {
+    const user = ctx.update.message.from.id
+    console.log('RECEIVED LOCATION', ctx.update.message.location);
+    if (reports[user] !== undefined) {
+        reports[user].location = ctx.update.message.location;
+        const report = new reportModel();
+        report.photo = reports[user].photo
+        report.location = {
+            "type": "Point",
+            "coordinates": [
+                ctx.update.message.location.longitude,
+                ctx.update.message.location.latitude
+            ]
+        }
+        report.approved = false
+        reports[user] = {
+            photo: "",
+            location: {}
+        }
+        report.timestamp = new Date().getTime()
+        await report.save();
+        ctx.reply('Ben fatto, abbiamo memorizzato la fotografia all\'interno del nostro database!')
+    } else {
+        ctx.reply('Invia una foto prima!')
+    }
+})
+
+bot.command('mappa', async (ctx) => {
     const reports = await reportModel.find()
     const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
 
@@ -125,11 +142,6 @@ bot.command('map', async (ctx) => {
             console.log(e)
             ctx.reply('Can\'t render map!')
         });
-})
-
-bot.command('position', async (ctx) => {
-    const reports = await reportModel.findOne({ timestamp: -1 })
-    ctx.tg.sendLocation(ctx.chat.id, '11.120310', '76.119350')
 })
 
 bot.launch()
