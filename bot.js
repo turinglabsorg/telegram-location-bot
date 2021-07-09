@@ -19,20 +19,26 @@ const reportSchema = new mongoose.Schema({
         coordinates: {
             type: [Number],
             required: true
-        },
-        timestamp: {
-            type: Number
         }
-    }
+    },
+    timestamp: Number
 });
 const reportModel = mongoose.model('report', reportSchema);
 
-console.log('STARTING BOT..')
+console.log('STARTING TELEGRAF..')
 const bot = new Telegraf(process.env.BOT_TOKEN)
+const app = express()
+const port = 3000
 const reports = {}
 
-bot.help((ctx) => ctx.reply('Send me a sticker'))
+if(!fs.existsSync('./photos')){
+    fs.mkdirSync('./photos')
+}
+if(!fs.existsSync('./maps')){
+    fs.mkdirSync('./maps')
+}
 
+bot.help((ctx) => ctx.reply('Send me a sticker'))
 bot.start((ctx) => ctx.reply('Welcome, this is a map bot!'))
 
 bot.on('location', async (ctx) => {
@@ -49,7 +55,7 @@ bot.on('location', async (ctx) => {
                 ctx.update.message.location.latitude
             ]
         }
-        report.timestamp = new Date.getTime()
+        report.timestamp = new Date().getTime()
         await report.save();
         console.log(reports[user])
         ctx.reply('Well done!')
@@ -123,11 +129,6 @@ bot.command('position', async (ctx) => {
 })
 
 bot.launch()
-console.log('BOT STARTED!')
-
-console.log('STARTING EXPRESS')
-const app = express()
-const port = 3000
 
 app.get('/', (req, res) => {
     res.send('Bot Works!')
@@ -163,5 +164,6 @@ app.get('/map', async (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log('BOT STARTED!')
 })
+
