@@ -2,7 +2,7 @@
   <div id="app">
     <div style="height: 70px; width:100%; display:block; overflow:hidden">
       <img style="float: left; width:auto; height:70px;" src="/logo.png" />
-      <a href="https://t.me/munnizzaland_bot" target="_blank" style="float:right; margin:20px"><b-button type="is-small is-link is-light">SEGNALA</b-button><br /></a>
+      <a href="https://t.me/munnizzaland_bot" target="_blank" style="float:right; margin:20px"><b-button type="is-small is-danger">SEGNALA</b-button><br /></a>
     </div>
     <!--<div id="nav">
       <router-link to="/">Home</router-link> |

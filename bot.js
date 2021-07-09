@@ -25,7 +25,6 @@ const reportSchema = new mongoose.Schema({
     timestamp: Number,
     approved: Boolean
 });
-const reportModel = mongoose.model('report', reportSchema);
 
 console.log('STARTING TELEGRAF..')
 const bot = new Telegraf(process.env.BOT_TOKEN)
@@ -93,6 +92,7 @@ bot.on('location', async (ctx) => {
     const user = ctx.update.message.from.id
     console.log('RECEIVED LOCATION', ctx.update.message.location);
     if (reports[user] !== undefined) {
+        const reportModel = mongoose.model('report', reportSchema);
         reports[user].location = ctx.update.message.location;
         const report = new reportModel();
         report.photo = reports[user].photo
@@ -110,13 +110,14 @@ bot.on('location', async (ctx) => {
         }
         report.timestamp = new Date().getTime()
         await report.save();
-        ctx.reply('Ben fatto, abbiamo memorizzato la fotografia all\'interno del nostro database!')
+        ctx.reply(`🎉🎉🎉 Ben fatto!! Continua così, le tue segnalazioni sono importanti, continua a farne!`)
     } else {
         ctx.reply('Invia una foto prima!')
     }
 })
 
 bot.command('mappa', async (ctx) => {
+    const reportModel = mongoose.model('report', reportSchema);
     const reports = await reportModel.find()
     const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
 
@@ -154,6 +155,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/map', async (req, res) => {
+    const reportModel = mongoose.model('report', reportSchema);
     const reports = await reportModel.find()
     const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
 
@@ -183,6 +185,7 @@ app.get('/map', async (req, res) => {
 })
 
 app.get('/markers', async (req, res) => {
+    const reportModel = mongoose.model('report', reportSchema);
     const reports = await reportModel.find({ approved: true })
     res.send(reports)
 })
