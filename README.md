@@ -1,6 +1,6 @@
-# Munnizza Free BOT
+# MunnizzaLand BOT
 
-Questo bot di telegram serve per catalogare in una mappa tutte le aree con discariche abusive.
+Questo bot di Telegram serve per catalogare in una mappa tutte le aree con discariche abusive.
 Il progetto nasce dal basso, da un gruppo di associazioni della provincia di Ragusa e che vogliono mettere in risalto questo enorme problema.
 
 Vuoi contribuire o creare un altro bot come questo? Nessun problema, fai un fork o proponi modifiche con una PR.

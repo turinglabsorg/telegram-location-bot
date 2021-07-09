@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
 const express = require('express')
 const StaticMaps = require('staticmaps')
+const cors = require('cors')
 
 console.log('INIT MONGODB..')
 const reportSchema = new mongoose.Schema({
@@ -29,17 +30,18 @@ const reportModel = mongoose.model('report', reportSchema);
 console.log('STARTING TELEGRAF..')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 const app = express()
+app.use(cors())
 const port = 3000
 const reports = {}
 
-if(!fs.existsSync('./photos')){
+if (!fs.existsSync('./photos')) {
     fs.mkdirSync('./photos')
 }
-if(!fs.existsSync('./maps')){
+if (!fs.existsSync('./maps')) {
     fs.mkdirSync('./maps')
 }
 
-const help = `Ciao! Io sono Munnizza-Alert, il bot che popolerà un grande database di tutte le discariche abusive in Sicilia!
+const help = `Ciao! Io sono MunnizzaLand, il bot che popolerà un grande database di tutte le discariche abusive!
 Si tratta di un'iniziativa congiunta di associazioni del territorio per denunciare questo grande problema, dai anche tu una mano!
 
 Come fare?
@@ -48,7 +50,7 @@ Come fare?
 3) 🚀 Condividi la /mappa e questo bot con tutti i tuoi contatti!
 
 Non ti preoccupare, le segnalazioni sono anonime, non registriamo nessun dato riguardante il tuo dispositivo o il tuo numero di cellulare.
-Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: https://github.com/yomi-digital/munnizzafree-bot
+Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: https://github.com/yomi-digital/munnizza-land
 `
 
 bot.help((ctx) => ctx.reply(help))
@@ -177,6 +179,11 @@ app.get('/map', async (req, res) => {
             console.log(e)
             res.send('CAN\'T RENDER MAP')
         });
+})
+
+app.get('/markers', async (req, res) => {
+    const reports = await reportModel.find({ approved: true })
+    res.send(reports)
 })
 
 app.listen(port, () => {
