@@ -35,7 +35,7 @@ export default {
     // Init map object
     const map = new window.google.maps.Map(document.getElementById("map"), {
       center: { lat: 36.925935, lng: 14.739502 },
-      zoom: 13,
+      zoom: 10,
     });
     // Init map markers
     const markers = [];
