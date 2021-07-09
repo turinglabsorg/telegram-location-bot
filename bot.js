@@ -41,16 +41,23 @@ if (!fs.existsSync('./maps')) {
     fs.mkdirSync('./maps')
 }
 
-const help = `Ciao! Io sono MunnizzaLand, il bot che popolerà un grande database di tutte le discariche abusive!
+const help = `Ciao! 
+Io sono MunnizzaLand, il bot che popolerà un grande database di tutte le discariche abusive!
+
+Cos'è?
 Si tratta di un'iniziativa congiunta di associazioni del territorio per denunciare questo grande problema, dai anche tu una mano!
 
-Come fare?
-1) 📷 Inizia inviandomi una fotografia di una discarica
-2) 📍 Invia subito dopo la tua posizione
-3) 🚀 Condividi la /mappa e questo bot con tutti i tuoi contatti!
+E la privacy?
+Tutte le segnalazioni sono anonime, non registriamo nessun dato riguardante il tuo dispositivo o il tuo numero di cellulare.
 
-Non ti preoccupare, le segnalazioni sono anonime, non registriamo nessun dato riguardante il tuo dispositivo o il tuo numero di cellulare.
-Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: https://github.com/yomi-digital/munnizza-land
+Come fare?
+1) 📷 Invia una fotografia di una discarica
+2) 📍 Allega subito dopo la tua posizione
+3) 🚀 Condividi la /mappa e questo bot con i tuoi contatti!
+
+Sicurezza
+Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: 
+https://github.com/yomi-digital/munnizza-land
 `
 
 bot.help((ctx) => ctx.reply(help))
@@ -75,7 +82,7 @@ bot.on('photo', (ctx) => {
                     response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
                         .on('finish', () => {
                             reports[user].photo = fileId + '.jpg'
-                            ctx.reply('Ok, ora invia la tua 📍 posizione, così da poter accoppiare la fotografia!')
+                            ctx.reply('Ok, ora allega la tua 📍 posizione, così da poterla accoppiare con la foto e geolocalizzare la discarica.')
                         })
                         .on('error', e => {
                             ctx.reply('Please retry the upload of the photo..')
@@ -115,7 +122,11 @@ bot.on('location', async (ctx) => {
             }
             report.timestamp = new Date().getTime()
             await report.save();
-            ctx.reply(`🎉🎉🎉 Ben fatto!! Continua così, le tue segnalazioni sono importanti, continua a farne!`)
+            ctx.reply(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione! Impieghiamo massimo 24h!
+
+            Grazie per aver partecipato all'iniziativa di MunnizzaLand. Le tue segnalazioni sono importanti, continua ad aiutarci!
+            Puoi vedere la mappa di tutte le segnalazioni approvate sul sito di MunnizzaLand:
+            https://munnizza.land`)
         } else {
             ctx.reply('Invia una foto prima!')
         }
