@@ -99,6 +99,11 @@ bot.on('video', (ctx) => {
     ctx.reply('Ci dispiace, accettiamo solamente fotografie.')
 })
 
+bot.command('accept', (ctx) => {
+    console.log(ctx.update.message)
+    ctx.reply('What?')
+})
+
 bot.on('location', async (ctx) => {
     try {
         const user = ctx.update.message.from.id
@@ -121,11 +126,12 @@ bot.on('location', async (ctx) => {
 
             const inserted = await reportModel.findOne({ photo: reports[user].photo })
             console.log(inserted)
-            
+
             reports[user] = {
                 photo: "",
                 location: {}
             }
+            
             ctx.reply(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione! Impieghiamo massimo 24h!
 
             Grazie per aver partecipato all'iniziativa di MunnizzaLand. Le tue segnalazioni sono importanti, continua ad aiutarci!
