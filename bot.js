@@ -137,6 +137,12 @@ bot.on('location', async (ctx) => {
             Grazie per aver partecipato all'iniziativa di MunnizzaLand. Le tue segnalazioni sono importanti, continua ad aiutarci!
             Puoi vedere la mappa di tutte le segnalazioni approvate sul sito di MunnizzaLand:
             https://munnizza.land`)
+
+
+            // SEND IMAGE TO SEBA
+            ctx.telegram.sendMessage(ctx.update.message.from.id, "http://localhost:3000/" + inserted.photo)
+
+
         } else {
             ctx.reply('Invia una foto prima!')
         }
