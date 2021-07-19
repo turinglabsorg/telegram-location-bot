@@ -148,7 +148,7 @@ bot.on('location', async (ctx) => {
     }
 })
 
-bot.command('auth', (ctx) => {
+bot.command('auth', async (ctx) => {
     console.log("Received auth request from: " + ctx.update.message.from.username)
     if (ctx.update.message.from.username === process.env.MANAGER) {
         fs.writeFileSync('master', ctx.update.message.chat.id.toString())
