@@ -152,6 +152,7 @@ bot.command('auth', (ctx) => {
     console.log("Received auth request from: " + ctx.update.message.from.username)
     if (ctx.update.message.from.username === process.env.MANAGER) {
         fs.writeFileSync('master', ctx.update.message.chat.id.toString())
+        await ctx.reply("Che la forza sia con te!")
         ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
     } else {
         ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
@@ -210,6 +211,7 @@ bot.command('validate', async ctx => {
                 }
             }
         } else {
+            await ctx.reply("Non c'è nulla da validare!")
             ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
         }
     } else {
