@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf')
+const { MenuTemplate, MenuMiddleware } = require('telegraf-inline-menu')
 require('dotenv').config()
 const axios = require('axios')
 const fs = require('fs')
@@ -23,7 +24,8 @@ const reportSchema = new mongoose.Schema({
         }
     },
     timestamp: Number,
-    approved: Boolean
+    approved: Boolean,
+    evalued: Boolean
 });
 
 console.log('STARTING TELEGRAF..')
@@ -99,11 +101,6 @@ bot.on('video', (ctx) => {
     ctx.reply('Ci dispiace, accettiamo solamente fotografie.')
 })
 
-bot.command('accept', (ctx) => {
-    console.log(ctx.update.message)
-    ctx.reply('What?')
-})
-
 bot.on('location', async (ctx) => {
     try {
         const user = ctx.update.message.from.id
@@ -121,17 +118,17 @@ bot.on('location', async (ctx) => {
                 ]
             }
             report.approved = false
+            report.evalued = false
             report.timestamp = new Date().getTime()
             await report.save();
 
-            const inserted = await reportModel.findOne({ photo: reports[user].photo })
-            console.log(inserted)
+            await reportModel.findOne({ photo: reports[user].photo })
 
             reports[user] = {
                 photo: "",
                 location: {}
             }
-            
+
             ctx.reply(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione! Impieghiamo massimo 24h!
 
             Grazie per aver partecipato all'iniziativa di MunnizzaLand. Le tue segnalazioni sono importanti, continua ad aiutarci!
@@ -139,22 +136,91 @@ bot.on('location', async (ctx) => {
             https://munnizza.land`)
 
 
-            // SEND IMAGE TO SEBA
-            ctx.telegram.sendMessage(ctx.update.message.from.id, "http://localhost:3000/" + inserted.photo)
-
+            // SEND IMAGE TO MASTER
+            const master = fs.readFileSync('master')
+            ctx.telegram.sendMessage(parseInt(master.toString()), "There's something to /validate!")
 
         } else {
             ctx.reply('Invia una foto prima!')
         }
     } catch (e) {
-        ctx.reply("E' successo qualcosa di strano..-riprova!")
+        ctx.reply("E' successo qualcosa di strano...riprova!")
+    }
+})
+
+bot.command('auth', (ctx) => {
+    console.log("Received auth request from: " + ctx.update.message.from.username)
+    if (ctx.update.message.from.username === process.env.MANAGER) {
+        fs.writeFileSync('master', ctx.update.message.chat.id.toString())
+        ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
+    } else {
+        ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
+    }
+})
+
+bot.command('validate', async ctx => {
+    const master = fs.readFileSync('master')
+    if (master.toString() === ctx.update.message.from.id.toString()) {
+        const reportModel = mongoose.model('report', reportSchema);
+        const reports = await reportModel.find({ evalued: false })
+        if (reports.length > 0) {
+            for (let k in reports) {
+                const report = reports[k]
+                const exists = fs.existsSync(`./photos/` + report.photo)
+                if (exists) {
+                    const menuTemplate = new MenuTemplate(ctx => {
+                        return {
+                            type: 'photo',
+                            media: {
+                                source: `./photos/` + report.photo
+                            },
+                            text: 'Vuoi accettare la foto?',
+                            parse_mode: 'Markdown'
+                        }
+                    })
+                    menuTemplate.interact('Accetta', 'a', {
+                        do: async ctx => {
+                            if (report !== undefined && report !== null && report.photo !== undefined) {
+                                report.approved = true
+                                report.evalued = true
+                                await report.save();
+                                ctx.reply('Ottimo, foto aggiunta in /mappa!')
+                            } else {
+                                ctx.reply("C'è qualcosa di strano, non trovo la foto!")
+                            }
+                            return false
+                        }
+                    })
+                    menuTemplate.interact('Ignora', 'b', {
+                        do: async ctx => {
+                            if (report !== undefined && report !== null && report.photo !== undefined) {
+                                report.approved = false
+                                report.evalued = true
+                                await report.save();
+                                ctx.reply('Ok, ignorata!')
+                            } else {
+                                ctx.reply("C'è qualcosa di strano, non trovo la foto!")
+                            }
+                            return false
+                        }
+                    })
+                    const menuMiddleware = new MenuMiddleware('/', menuTemplate)
+                    bot.use(menuMiddleware)
+                    menuMiddleware.replyToContext(ctx)
+                }
+            }
+        } else {
+            ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
+        }
+    } else {
+        ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
     }
 })
 
 bot.command('mappa', async (ctx) => {
     try {
         const reportModel = mongoose.model('report', reportSchema);
-        const reports = await reportModel.find()
+        const reports = await reportModel.find({ approved: true })
         const mapImg = process.cwd() + '/maps/' + new Date().getTime().toString() + '.png'
 
         const map = new StaticMaps({
@@ -183,7 +249,7 @@ bot.command('mappa', async (ctx) => {
                 ctx.reply('Can\'t render map!')
             });
     } catch (e) {
-        ctx.reply("E' successo qualcosa di strano..-riprova!")
+        ctx.reply("E' successo qualcosa di strano...riprova!")
     }
 })
 
