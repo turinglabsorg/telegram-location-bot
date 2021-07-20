@@ -1907,6 +1907,11 @@ telegraf@^4.4.0:
     sandwich-stream "^2.0.2"
     typegram "^3.4.0"
 
+telegram-keyboard@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/telegram-keyboard/-/telegram-keyboard-2.2.6.tgz#56e3c5d137938e3fd673843475280ecc70ea4d40"
+  integrity sha512-rfJn55Nwt5w2aWagtxCUnN4AM/6tK+SRO89NolfRuJD8XiPB4IDRxP7nqekodSEkvvUpSmmQxrRG8ZheHdUYqQ==
+
 term-size@^2.1.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/term-size/-/term-size-2.2.1.tgz"

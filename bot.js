@@ -1,5 +1,4 @@
 const { Telegraf } = require('telegraf')
-const { MenuTemplate, MenuMiddleware } = require('telegraf-inline-menu')
 require('dotenv').config()
 const axios = require('axios')
 const fs = require('fs')
@@ -8,6 +7,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUni
 const express = require('express')
 const StaticMaps = require('staticmaps')
 const cors = require('cors')
+const { Keyboard, Key } = require('telegram-keyboard')
 
 console.log('INIT MONGODB..')
 const reportSchema = new mongoose.Schema({
@@ -165,11 +165,15 @@ bot.command('validate', async ctx => {
         const reportModel = mongoose.model('report', reportSchema);
         const reports = await reportModel.find({ evalued: false })
         if (reports.length > 0) {
+            let toValidate = []
             for (let k in reports) {
                 const report = reports[k]
-                console.log('Adding buttons for report', report)
-                ctx.replyWithPhoto('https://api.munnizza.land/' + report.photo)
+                const text = '💥💥Arrivata foto!💥💥\nhttps://api.munnizza.land/' + report.photo
+                ctx.reply(text)
+                toValidate.push(['approve:' + report._id, 'ignore:' + report._id])
             }
+            const keyboard = Keyboard.make(toValidate)
+            ctx.reply("Ora scegli!", keyboard.reply())
         } else {
             await ctx.reply("Non c'è nulla da validare!")
             ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
@@ -212,6 +216,36 @@ bot.command('mappa', async (ctx) => {
             });
     } catch (e) {
         ctx.reply("E' successo qualcosa di strano...riprova!")
+    }
+})
+
+
+bot.on('message', async (ctx) => {
+    console.log("Received message request from: " + ctx.update.message.from.username)
+    if (ctx.update.message.from.username === process.env.MANAGER) {
+        const text = ctx.update.message.text
+        if (text.indexOf('approve:') !== -1 || text.indexOf('ignore:') !== -1) {
+            const action = text.split(':')
+            const reportModel = mongoose.model('report', reportSchema);
+            const report = await reportModel.findOne({ _id: action[1] })
+            if (report !== undefined && report !== null) {
+                if (action[0] === 'approve') {
+                    report.evalued = true
+                    report.approved = true
+                    await report.save()
+                    await ctx.reply("Report validato correttamente!")
+                } else {
+                    report.evalued = true
+                    report.approved = false
+                    await report.save()
+                    await ctx.reply("Report ignorato correttamente!")
+                }
+            } else {
+                await ctx.reply("Questo report non esiste...")
+            }
+        }
+    } else {
+        ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
     }
 })
 
