@@ -170,14 +170,8 @@ bot.command('validate', async ctx => {
                 const exists = fs.existsSync(`./photos/` + report.photo)
                 if (exists) {
                     const menuTemplate = new MenuTemplate(ctx => {
-                        return {
-                            type: 'photo',
-                            media: {
-                                source: `./photos/` + report.photo
-                            },
-                            text: 'Vuoi accettare la foto? ' + report.photo,
-                            parse_mode: 'Markdown'
-                        }
+                        const text = 'https://api.munnizza.land/' + report.photo + '\nVuoi accettare?'
+                        return { text, parse_mode: 'Markdown' }
                     })
                     menuTemplate.interact('Accetta', 'a', {
                         do: async ctx => {
