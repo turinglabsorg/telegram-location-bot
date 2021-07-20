@@ -167,42 +167,8 @@ bot.command('validate', async ctx => {
         if (reports.length > 0) {
             for (let k in reports) {
                 const report = reports[k]
-                const exists = fs.existsSync(`./photos/` + report.photo)
-                if (exists) {
-                    const menuTemplate = new MenuTemplate(ctx => {
-                        const text = 'https://api.munnizza.land/' + report.photo + '\nVuoi accettare?'
-                        return { text, parse_mode: 'Markdown' }
-                    })
-                    menuTemplate.interact('Accetta', 'a', {
-                        do: async ctx => {
-                            if (report !== undefined && report !== null && report.photo !== undefined) {
-                                report.approved = true
-                                report.evalued = true
-                                await report.save();
-                                ctx.reply('Ottimo, foto aggiunta in /mappa!')
-                            } else {
-                                ctx.reply("C'è qualcosa di strano, non trovo la foto!")
-                            }
-                            return false
-                        }
-                    })
-                    menuTemplate.interact('Ignora', 'b', {
-                        do: async ctx => {
-                            if (report !== undefined && report !== null && report.photo !== undefined) {
-                                report.approved = false
-                                report.evalued = true
-                                await report.save();
-                                ctx.reply('Ok, ignorata!')
-                            } else {
-                                ctx.reply("C'è qualcosa di strano, non trovo la foto!")
-                            }
-                            return false
-                        }
-                    })
-                    const menuMiddleware = new MenuMiddleware('/', menuTemplate)
-                    bot.use(menuMiddleware)
-                    menuMiddleware.replyToContext(ctx)
-                }
+                console.log('Adding buttons for report', report)
+                ctx.replyWithPhoto('https://api.munnizza.land/' + report.photo)
             }
         } else {
             await ctx.reply("Non c'è nulla da validare!")
