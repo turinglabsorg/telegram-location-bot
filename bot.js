@@ -175,7 +175,8 @@ bot.command('validate', async ctx => {
             const keyboard = Keyboard.make(toValidate)
             ctx.reply("Ora scegli!", keyboard.reply())
         } else {
-            await ctx.reply("Non c'è nulla da validare!")
+            const keyboard = Keyboard.make([])
+            await ctx.reply("Non c'è nulla da validare!", keyboard.reply())
             ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/master_dance.gif?raw=true")
         }
     } else {
