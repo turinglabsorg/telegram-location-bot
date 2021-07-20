@@ -169,11 +169,11 @@ bot.command('validate', async ctx => {
             for (let k in reports) {
                 const report = reports[k]
                 const text = '💥💥Arrivata foto!💥💥\nhttps://api.munnizza.land/' + report.photo
-                ctx.reply(text)
+                await ctx.reply(text)
                 toValidate.push(['approve:' + report._id, 'ignore:' + report._id])
             }
             const keyboard = Keyboard.make(toValidate)
-            ctx.reply("Ora scegli!", keyboard.reply())
+            await ctx.reply("Ora scegli!", keyboard.reply())
         } else {
             const keyboard = Keyboard.make([])
             await ctx.reply("Non c'è nulla da validare!", keyboard.reply())
