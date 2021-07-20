@@ -175,7 +175,7 @@ bot.command('validate', async ctx => {
                             media: {
                                 source: `./photos/` + report.photo
                             },
-                            text: 'Vuoi accettare la foto?',
+                            text: 'Vuoi accettare la foto? ' + report.photo,
                             parse_mode: 'Markdown'
                         }
                     })
