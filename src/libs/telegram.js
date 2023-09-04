@@ -25,7 +25,7 @@ Tutte le segnalazioni sono anonime, non registriamo nessun dato riguardante il t
 Come fare?
 1) 📷 Invia una fotografia di una discarica
 2) 📍 Allega subito dopo la tua posizione
-3) 🚀 Condividi la /mappa e questo bot con i tuoi contatti!
+3) 🚀 Condividi la mappa e questo bot con i tuoi contatti!
 
 Sicurezza
 Questo progetto è open-source, vuol dire che il suo codice è pubblico e può essere consultato qui: 
@@ -86,6 +86,7 @@ https://github.com/yomi-digital/munnizza-land
                 reports[user].location = ctx.update.message.location;
                 const report = new reportModel();
                 report.photo = reports[user].photo
+                report.from = user
                 report.location = {
                     "type": "Point",
                     "coordinates": [
@@ -105,13 +106,13 @@ https://github.com/yomi-digital/munnizza-land
                     location: {}
                 }
 
-                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di MunnizzaLand:\n\nhttps://munnizza\\.land`)
+                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di Munnizza.Land:\n\nhttps://munnizza\\.land`)
 
                 // SEND IMAGE TO ADMIN
                 const adminModel = mongoose.model('admins', adminSchema);
-                const admin = await adminModel.findOne({ username: ctx.update.message.from.username, approved: true })
+                const admin = await adminModel.findOne({ approved: true })
                 if (admin !== null) {
-                    ctx.telegram.sendMessage(parseInt(admin.chatId), "Devi validare una foto /validate!")
+                    ctx.telegram.sendMessage(parseInt(admin.chatId), "Devi validare una foto, usa /validate per iniziare la procedura!")
                 } else {
                     console.log("Non posso notificare nessuno..")
                 }
@@ -157,7 +158,7 @@ https://github.com/yomi-digital/munnizza-land
                 let toValidate = []
                 for (let k in reports) {
                     const report = reports[k]
-                    const text = '💥💥Arrivata foto!💥💥\nhttps://api.munnizza.land/' + report.photo
+                    const text = '💥💥Arrivata foto!💥💥\n' + report.photo
                     await ctx.reply(text)
                     toValidate.push(['approve:' + report._id, 'ignore:' + report._id])
                 }

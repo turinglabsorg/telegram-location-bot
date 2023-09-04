@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 export const reportSchema = new mongoose.Schema({
     photo: String,
+    from: Number,
     location: {
         type: {
             type: String,
