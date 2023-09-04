@@ -106,7 +106,7 @@ https://github.com/yomi-digital/munnizza-land
                     location: {}
                 }
 
-                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di Munnizza.Land:\n\nhttps://munnizza\\.land`)
+                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di Munnizza\\.Land:\n\nhttps://munnizza\\.land`)
 
                 // SEND IMAGE TO ADMIN
                 const adminModel = mongoose.model('admins', adminSchema);
