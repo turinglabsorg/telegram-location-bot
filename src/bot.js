@@ -42,5 +42,5 @@ app.get('/markers', async (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log('💥 APP STARTED!')
+    console.log('💥 APP SERVING THROUGH PORT 3000!')
 })
