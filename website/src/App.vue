@@ -1,6 +1,7 @@
 <template>
   <div>
     <img src="/logo.png" height="60px"/>
+    <a href="https://t.me/munnizzaland_bot" style="position: absolute; top:0; right:0; padding:28px; font-size:13px; text-decoration: none; font-weight: bold;">CONTRIBUISCI</a>
     <div id="map"></div>
     <div style="text-align: center; margin-top: 10px; font-size: 10px">
       Munnizza.Land è un progetto
@@ -16,7 +17,6 @@ html {
   height: 100vh;
   overflow-x: hidden;
   font-family: "Roboto Mono", monospace !important;
-  text-align: center;
 }
 
 .button {
