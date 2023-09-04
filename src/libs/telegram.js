@@ -83,39 +83,46 @@ https://github.com/yomi-digital/munnizza-land
             console.log('📍 RECEIVED LOCATION', ctx.update.message.location);
             if (reports[user] !== undefined) {
                 const reportModel = mongoose.model('report', reportSchema);
-                reports[user].location = ctx.update.message.location;
-                const report = new reportModel();
-                report.photo = reports[user].photo
-                report.from = user
-                report.location = {
-                    "type": "Point",
-                    "coordinates": [
-                        ctx.update.message.location.longitude,
-                        ctx.update.message.location.latitude
-                    ]
+                const check = await reportModel.findOne({ photo: reports[user].photo })
+
+                if (check === null) {
+                    reports[user].location = ctx.update.message.location;
+                    const report = new reportModel();
+                    report.photo = reports[user].photo
+                    report.from = user
+                    report.location = {
+                        "type": "Point",
+                        "coordinates": [
+                            ctx.update.message.location.longitude,
+                            ctx.update.message.location.latitude
+                        ]
+                    }
+                    report.approved = false
+                    report.evalued = false
+                    report.timestamp = new Date().getTime()
+                    await report.save();
+
+                    await reportModel.findOne({ photo: reports[user].photo })
+
+                    ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di Munnizza\\.Land:\n\nhttps://munnizza\\.land`)
+
+                    // SEND IMAGE TO ADMIN
+                    const adminModel = mongoose.model('admins', adminSchema);
+                    const admin = await adminModel.findOne({ approved: true })
+                    if (admin !== null) {
+                        ctx.telegram.sendMessage(parseInt(admin.chatId), "Devi validare una foto, usa /validate per iniziare la procedura!")
+                    } else {
+                        console.log("Non posso notificare nessuno..")
+                    }
+                } else {
+                    ctx.reply("Questa foto è già stata segnalata, grazie per la collaborazione!")
                 }
-                report.approved = false
-                report.evalued = false
-                report.timestamp = new Date().getTime()
-                await report.save();
-
-                await reportModel.findOne({ photo: reports[user].photo })
-
+                // Reset in-memory report
                 reports[user] = {
                     photo: "",
                     location: {}
                 }
 
-                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di Munnizza\\.Land:\n\nhttps://munnizza\\.land`)
-
-                // SEND IMAGE TO ADMIN
-                const adminModel = mongoose.model('admins', adminSchema);
-                const admin = await adminModel.findOne({ approved: true })
-                if (admin !== null) {
-                    ctx.telegram.sendMessage(parseInt(admin.chatId), "Devi validare una foto, usa /validate per iniziare la procedura!")
-                } else {
-                    console.log("Non posso notificare nessuno..")
-                }
             } else {
                 ctx.reply('Invia una foto prima!')
             }
