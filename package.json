@@ -4,7 +4,7 @@
   "description": "A simple bot that accepts a location",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon bot.js",
+    "dev": "nodemon ./src/bot.js",
     "start": "node bot.js"
   },
   "type": "module",
