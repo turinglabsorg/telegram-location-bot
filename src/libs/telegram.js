@@ -186,7 +186,7 @@ https://github.com/yomi-digital/munnizza-land
             });
 
             const marker = {
-                img: `./marker.png`,
+                img: `../marker.png`,
                 offsetX: 24,
                 offsetY: 48,
                 width: 48,
