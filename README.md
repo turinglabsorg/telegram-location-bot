@@ -1,4 +1,4 @@
-# MunnizzaLand BOT
+# Munnizza.Land BOT
 
 Questo bot di Telegram serve per catalogare in una mappa tutte le aree con discariche abusive.
 Il progetto nasce dal basso, da un gruppo di associazioni della provincia di Ragusa e che vogliono mettere in risalto questo enorme problema.
@@ -7,12 +7,20 @@ Vuoi contribuire o creare un altro bot come questo? Nessun problema, fai un fork
 
 ## Istruzioni base
 
-Prima di tutto contatta il bot di Telegram `@BotFather` per ottenere la tua apikey.
-Dopo di che crea un file `.env` inserendo:
+Intanto serve la connessione a MongoDB, per questo crea un file `.env` e inserisci:
 
 ```
 MONGODB_CONNECTION=UnaConnessioneAMongoDB
+```
+
+## Attivare telegram
+
+Prima di tutto contatta il bot di Telegram `@BotFather` per ottenere la tua apikey.
+Dopo di che aggiungi al file `.env`:
+
+```
 BOT_TOKEN=IlTokenDelBot
+MANAGER=IlTuoUsername
 ```
 
 ## Fare partire il bot
