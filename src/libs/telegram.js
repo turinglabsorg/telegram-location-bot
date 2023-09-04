@@ -6,6 +6,7 @@ import fs from 'fs'
 import axios from 'axios'
 import mongoose from 'mongoose'
 import { reportSchema, adminSchema } from './database.js'
+import { uploadFileOnPinata } from './pinata.js'
 dotenv.config()
 
 const reports = {}
@@ -44,21 +45,26 @@ https://github.com/yomi-digital/munnizza-land
                 }
             }
             const fileId = ctx.update.message.photo[3].file_id
-            console.log('RECEIVED PICTURE', fileId);
+            console.log('📸 RECEIVED PICTURE', fileId);
             ctx.telegram.getFileLink(fileId).then(url => {
                 url = url.href
-                console.log(url)
+                console.log("Downloading from file link:", url)
                 axios({ url, responseType: 'stream' }).then(response => {
-                    return new Promise((resolve, reject) => {
-                        response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
-                            .on('finish', () => {
-                                reports[user].photo = fileId + '.jpg'
+                    response.data.pipe(fs.createWriteStream(`./photos/${fileId}.jpg`))
+                        .on('finish', async () => {
+                            const file = fs.readFileSync(`./photos/${fileId}.jpg`)
+                            const uploaded = await uploadFileOnPinata(file, fileId + '.jpg')
+                            console.log("Upload on Pinata result:", uploaded)
+                            if (uploaded === false) {
+                                ctx.reply("C'è stato un problema con l'upload della foto, riprova!")
+                            } else {
+                                reports[user].photo = process.env.PINATA_ENDPOINT + "/ipfs/" + uploaded
                                 ctx.reply('Ok, ora allega la tua 📍 posizione, così da poterla accoppiare con la foto e geolocalizzare la discarica.')
-                            })
-                            .on('error', e => {
-                                ctx.reply('Please retry the upload of the photo..')
-                            })
-                    });
+                            }
+                        })
+                        .on('error', e => {
+                            ctx.reply('Please retry the upload of the photo..')
+                        })
                 })
             })
         } catch (e) {
@@ -74,7 +80,7 @@ https://github.com/yomi-digital/munnizza-land
     bot.on('location', async (ctx) => {
         try {
             const user = ctx.update.message.from.id
-            console.log('RECEIVED LOCATION', ctx.update.message.location);
+            console.log('📍 RECEIVED LOCATION', ctx.update.message.location);
             if (reports[user] !== undefined) {
                 const reportModel = mongoose.model('report', reportSchema);
                 reports[user].location = ctx.update.message.location;
@@ -99,11 +105,7 @@ https://github.com/yomi-digital/munnizza-land
                     location: {}
                 }
 
-                ctx.reply(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione! Impieghiamo massimo 24h!
-
-            Grazie per aver partecipato all'iniziativa di MunnizzaLand. Le tue segnalazioni sono importanti, continua ad aiutarci!
-            Puoi vedere la mappa di tutte le segnalazioni approvate sul sito di MunnizzaLand:
-            https://munnizza.land`)
+                ctx.replyWithMarkdownV2(`🎉🎉🎉 Ben fatto, non resta che aspettare l'approvazione\\! Impieghiamo massimo 24h\\!\n\nGrazie per aver partecipato all'iniziativa di MunnizzaLand\\. Le tue segnalazioni sono importanti, continua ad aiutarci\\!\n\nPuoi vedere la mappa di tutte le segnalazioni approvate sul sito di MunnizzaLand:\n\nhttps://munnizza\\.land`)
 
                 // SEND IMAGE TO ADMIN
                 const adminModel = mongoose.model('admins', adminSchema);
