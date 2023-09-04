@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/bot.js",
-    "start": "node bot.js"
+    "start": "node ./src/bot.js"
   },
   "type": "module",
   "repository": {
