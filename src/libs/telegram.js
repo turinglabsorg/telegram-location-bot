@@ -219,33 +219,40 @@ https://github.com/yomi-digital/munnizza-land
     })
 
     bot.on('message', async (ctx) => {
-        console.log("Received message request from: " + ctx.update.message.from.username)
-        const adminModel = mongoose.model('admins', adminSchema);
-        const admin = await adminModel.findOne({ username: ctx.update.message.from.username, approved: true })
-        if (admin !== null) {
-            const text = ctx.update.message.text
-            if (text.indexOf('approve:') !== -1 || text.indexOf('ignore:') !== -1) {
-                const action = text.split(':')
-                const reportModel = mongoose.model('report', reportSchema);
-                const report = await reportModel.findOne({ _id: action[1] })
-                if (report !== undefined && report !== null) {
-                    if (action[0] === 'approve') {
-                        report.evalued = true
-                        report.approved = true
-                        await report.save()
-                        await ctx.reply("Report validato correttamente!")
+        try {
+            console.log("Received message request from: " + ctx.update.message.from.username)
+            const adminModel = mongoose.model('admins', adminSchema);
+            const admin = await adminModel.findOne({ username: ctx.update.message.from.username, approved: true })
+            if (admin !== null) {
+                const text = ctx.update.message.text
+                if (text.indexOf('approve:') !== -1 || text.indexOf('ignore:') !== -1) {
+                    const action = text.split(':')
+                    const reportModel = mongoose.model('report', reportSchema);
+                    const report = await reportModel.findOne({ _id: action[1] })
+                    if (report !== undefined && report !== null) {
+                        if (action[0] === 'approve') {
+                            report.evalued = true
+                            report.approved = true
+                            await report.save()
+                            await ctx.reply("Report validato correttamente!")
+                            await ctx.telegram.sendMessage(parseInt(report.from), "Grazie, il tuo report è stato accettato ed inserito nella mappa!")
+                        } else {
+                            report.evalued = true
+                            report.approved = false
+                            await report.save()
+                            await ctx.reply("Report ignorato correttamente!")
+                            await ctx.telegram.sendMessage(parseInt(report.from), "Ci dispiace, ma il tuo report non è stato ritenuto idoneo ad essere inserito!")
+                        }
                     } else {
-                        report.evalued = true
-                        report.approved = false
-                        await report.save()
-                        await ctx.reply("Report ignorato correttamente!")
+                        await ctx.reply("Questo report non esiste...")
                     }
-                } else {
-                    await ctx.reply("Questo report non esiste...")
                 }
+            } else {
+                ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
             }
-        } else {
-            ctx.replyWithAnimation("https://github.com/yomi-digital/munnizza-land/blob/master/assets/no_master.gif?raw=true")
+        } catch (e) {
+            console.log(e.message)
+            ctx.reply("È successo qualcosa di strano..riprova!")
         }
     })
 
