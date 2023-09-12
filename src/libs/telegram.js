@@ -8,8 +8,7 @@ import mongoose from 'mongoose'
 import { reportSchema, adminSchema } from './database.js'
 import { uploadFileOnPinata } from './pinata.js'
 dotenv.config()
-
-const reports = {}
+let reports = {}
 
 export const runBot = () => {
     const bot = new Telegraf(process.env.BOT_TOKEN)
@@ -63,7 +62,7 @@ https://github.com/yomi-digital/munnizza-land
                             }
                         })
                         .on('error', e => {
-                            ctx.reply('Please retry the upload of the photo..')
+                            ctx.reply('Abbiamo riscontrato un problema con la foto, prova di nuovo..')
                         })
                 })
             })
@@ -97,6 +96,7 @@ https://github.com/yomi-digital/munnizza-land
                             ctx.update.message.location.latitude
                         ]
                     }
+                    report.source = 'telegram'
                     report.approved = false
                     report.evalued = false
                     report.timestamp = new Date().getTime()
@@ -235,13 +235,17 @@ https://github.com/yomi-digital/munnizza-land
                             report.approved = true
                             await report.save()
                             await ctx.reply("Report validato correttamente!")
-                            await ctx.telegram.sendMessage(parseInt(report.from), "Grazie, il tuo report è stato accettato ed inserito nella mappa!")
+                            if (report.source === 'telegram') {
+                                await ctx.telegram.sendMessage(parseInt(report.from), "Grazie, il tuo report è stato accettato ed inserito nella mappa!")
+                            }
                         } else {
                             report.evalued = true
                             report.approved = false
                             await report.save()
                             await ctx.reply("Report ignorato correttamente!")
-                            await ctx.telegram.sendMessage(parseInt(report.from), "Ci dispiace, ma il tuo report non è stato ritenuto idoneo ad essere inserito!")
+                            if (report.source === 'telegram') {
+                                await ctx.telegram.sendMessage(parseInt(report.from), "Ci dispiace, ma il tuo report non è stato ritenuto idoneo ad essere inserito!")
+                            }
                         }
                     } else {
                         await ctx.reply("Questo report non esiste...")

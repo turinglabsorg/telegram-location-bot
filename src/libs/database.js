@@ -16,11 +16,14 @@ export const reportSchema = new mongoose.Schema({
     },
     timestamp: Number,
     approved: Boolean,
-    evalued: Boolean
+    evalued: Boolean,
+    source: String
 });
 
 export const adminSchema = new mongoose.Schema({
     username: String,
     approved: Boolean,
+    whatsapp_phone_number: Number,
+    whatsapp_user: Number,
     chatId: String
 });

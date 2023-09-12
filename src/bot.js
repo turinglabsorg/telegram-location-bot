@@ -5,8 +5,10 @@ import express from 'express'
 import cors from 'cors'
 import { reportSchema } from './libs/database.js'
 import { runBot } from './libs/telegram.js'
+import { getWebhook, processWebhook } from './libs/whatsapp.js'
+import body_parser from 'body-parser'
 
-console.log("🪄 LOADING ENVIRONMENT..")
+console.log("🤖 LOADING ENVIRONMENT..")
 dotenv.config()
 
 console.log("💽 CONNECTING TO MONGODB..")
@@ -14,6 +16,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUni
 
 console.log('🚀 STARTING TELEGRAF..')
 const app = express()
+app.use(body_parser.json())
 app.use(cors())
 app.use(express.static('photos'));
 const port = 3000
@@ -40,6 +43,9 @@ app.get('/markers', async (req, res) => {
         res.send("E' successo qualcosa di strano..-riprova!")
     }
 })
+
+app.get('/whatsapp/webhook', getWebhook)
+app.post('/whatsapp/webhook', processWebhook)
 
 app.listen(port, () => {
     console.log('💥 APP SERVING THROUGH PORT 3000!')
