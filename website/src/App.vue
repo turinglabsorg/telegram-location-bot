@@ -1,8 +1,22 @@
 <template>
   <div>
-    <img src="/logo.png" height="60px"/>
-    <a href="https://t.me/munnizzaland_bot" style="position: absolute; top:0; right:0; padding:28px; font-size:13px; text-decoration: none; font-weight: bold;">CONTRIBUISCI</a>
-    <div id="map"></div>
+    <div style="position:relative; height: 70px;">
+      <img src="/logo.png" style="height:60px; width:60px;" />
+      <a href="https://t.me/munnizzaland_bot"
+        style="position: absolute; top:0; right:0; padding:23px; font-size:13px; text-decoration: none; font-weight: bold;">CONTRIBUISCI</a>
+    </div>
+    <div id="map" v-if="page === 'map'"></div>
+    <div class="content" v-if="page === 'privacy'">
+      <h1>Privacy Policy</h1>
+      <p>
+        We don't collect any data, period.<br><br>
+        We don't use cookies, period.<br><br>
+        We don't use Google Analytics, period.<br><br>
+        We don't use any other tracking software, period.<br><br>
+        Check by your own at <a
+          href="https://github.com/yomi-digital/munnizza-land/tree/master/website">https://github.com/yomi-digital/munnizza-land</a>
+      </p>
+    </div>
     <div style="text-align: center; margin-top: 10px; font-size: 10px">
       Munnizza.Land è un progetto
       <a href="https://github.com/yomi-digital/munnizza-land" target="_blank">open-source</a>
@@ -13,10 +27,22 @@
 <style>
 body,
 html {
-  background: #bbdba9;
+  background: #499643;
   height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
   font-family: "Roboto Mono", monospace !important;
+  color: #fff;
+}
+
+.content {
+  text-align: center;
+  padding:20px;
+  height: calc(100vh - 170px);
+}
+
+a {
+  color: #eee;
+  text-decoration: underline;
 }
 
 .button {
@@ -24,7 +50,7 @@ html {
 }
 
 #map {
-  height: calc(100vh - 105px);
+  height: calc(100vh - 120px);
   border-radius: 10px;
 }
 </style>
@@ -35,6 +61,12 @@ import { Loader } from "@googlemaps/js-api-loader"
 export default {
   name: "Home",
   async mounted() {
+    // Get URL
+    const url = new URL(window.location.href);
+    console.log(url);
+    if (url.hash === "#/privacy" || url.hash === "#/terms") {
+      this.page = "privacy";
+    }
     // Downloading data from API
     // Init map object
     const maps = new Loader({
@@ -86,6 +118,11 @@ export default {
         });
       }
     })
+  },
+  data() {
+    return {
+      page: "map",
+    };
   },
 };
 </script>
