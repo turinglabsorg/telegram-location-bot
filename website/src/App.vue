@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="position:relative; height: 70px;">
-      <img src="/logo.png" style="height:60px; width:60px;" />
+      <img src="/logo_h.png" style="height:50px; margin-top:5px; margin-left:10px" />
       <a href="https://t.me/munnizzaland_bot"
         style="position: absolute; top:0; right:0; padding:23px; font-size:13px; text-decoration: none; font-weight: bold;">CONTRIBUISCI</a>
     </div>
