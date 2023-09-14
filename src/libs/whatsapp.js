@@ -4,6 +4,7 @@ import axios from 'axios'
 import mongoose from 'mongoose'
 import { reportSchema, adminSchema } from './database.js'
 import { uploadFileOnPinata } from './pinata.js'
+import { help } from './shared.js'
 dotenv.config()
 const token = process.env.WHATSAPP_TOKEN;
 let reports = {}
@@ -150,9 +151,10 @@ export async function processWebhook(req, res) {
                     if (req.body.entry[0].changes[0].value.messages[0].text.body === '/auth') {
                         console.log("PHONE NUMBER ID:", phone_number_id)
                         console.log("PHONE NUMBER:", user)
+                    } else {
+                        await sendMessage(phone_number_id, user, help)
                     }
                 }
-
             }
             res.sendStatus(200);
         } else {
