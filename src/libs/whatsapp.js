@@ -147,7 +147,7 @@ export async function processWebhook(req, res) {
                         "TEXT",
                         req.body.entry[0].changes[0].value.messages[0].text.body
                     );
-                    if(req.body.entry[0].changes[0].value.messages[0].text.body === '/auth'){
+                    if (req.body.entry[0].changes[0].value.messages[0].text.body === '/auth') {
                         console.log("PHONE NUMBER ID:", phone_number_id)
                         console.log("PHONE NUMBER:", user)
                     }
@@ -168,20 +168,27 @@ export async function processWebhook(req, res) {
 
 function sendMessage(phone_number_id, user, message) {
     return new Promise(async response => {
-        const sent = await axios({
-            method: "POST",
-            url:
-                "https://graph.facebook.com/v17.0/" +
-                phone_number_id +
-                "/messages?access_token=" +
-                token,
-            data: {
-                messaging_product: "whatsapp",
-                to: user,
-                text: { body: message },
-            },
-            headers: { "Content-Type": "application/json" },
-        });
-        response(sent.data);
+        try {
+            const sent = await axios({
+                method: "POST",
+                url:
+                    "https://graph.facebook.com/v17.0/" +
+                    phone_number_id +
+                    "/messages?access_token=" +
+                    token,
+                data: {
+                    messaging_product: "whatsapp",
+                    to: user,
+                    text: { body: message },
+                },
+                headers: { "Content-Type": "application/json" },
+            });
+            response(sent.data);
+        } catch (e) {
+            console.log("😵 WHATSAPP SEND MESSAGE FAILED..")
+            console.log(e.message)
+            console.log("--------------------")
+            response(false)
+        }
     })
 }
