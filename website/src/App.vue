@@ -23,8 +23,9 @@
     </div>
     <div class="content" v-if="page === 'contribute'" style="padding: 30px">
       <h1>Come funziona?</h1>
-      Scegli la tua applicazione di messaggistica preferita e aggiungi il bot.<br><br>Invia una foto 📸 della discarica,
-      invia la posizione 📍 subito dopo e aspetta la conferma, dopo massimo 24h vedrai la segnalazione!<br><br><br>
+      Scegli la tua applicazione di messaggistica preferita e clicca per iniziare la chat 💬.<br><br>
+      Tramite la chat potrai inviare la foto 📸 e la posizione 📍 della segnalazione!<br><br>
+      Entro massimo 24h vedrai aggiunta la posizione sulla mappa!<br><br><br>
       <a class="btn" href="https://wa.me/393312296579"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a><br><br>
       <a class="btn" href="https://t.me/munnizzaland_bot"><i class="fa-brands fa-telegram"></i> TELEGRAM</a>
     </div>
