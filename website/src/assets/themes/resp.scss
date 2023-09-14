@@ -1,0 +1,24 @@
+@media screen and (max-width: 768px) {
+  .title-cnt h1,
+  .content-cnt .content h1 {
+    font-size: calc(2rem + 2vw);
+  }
+
+  .title-cnt p,
+  .title-cnt .search-cnt {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 424px) {
+  header {
+    .logo-cnt img {
+      height: 40px;
+    }
+  }
+}
+@media screen and (max-width: 375px) {
+  header {
+    padding: 2rem 1rem;
+  }
+}
