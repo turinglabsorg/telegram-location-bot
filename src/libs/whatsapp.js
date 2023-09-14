@@ -52,8 +52,10 @@ export async function processWebhook(req, res) {
                         location: {}
                     }
                 }
+                let found = false
                 // Check if the message is an image
                 if (req.body.entry[0].changes[0].value.messages[0].image !== undefined) {
+                    found = true
                     console.log(
                         '📸 RECEIVED PICTURE',
                         req.body.entry[0].changes[0].value.messages[0].image
@@ -93,6 +95,7 @@ export async function processWebhook(req, res) {
                 if (
                     req.body.entry[0].changes[0].value.messages[0].location !== undefined
                 ) {
+                    found = true
                     console.log(
                         "LOCATION",
                         req.body.entry[0].changes[0].value.messages[0].location
@@ -151,7 +154,7 @@ export async function processWebhook(req, res) {
                     if (req.body.entry[0].changes[0].value.messages[0].text.body === '/auth') {
                         console.log("PHONE NUMBER ID:", phone_number_id)
                         console.log("PHONE NUMBER:", user)
-                    } else {
+                    } else if (!found) {
                         await sendMessage(phone_number_id, user, help)
                     }
                 }
