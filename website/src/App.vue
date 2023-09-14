@@ -9,7 +9,7 @@
         MAPPA
       </span>
     </div>
-    <div id="map" v-show="page === 'map'"></div>
+    <div id="map" v-if="page === 'map'"></div>
     <div class="content" v-if="page === 'privacy'">
       <h1>Privacy Policy</h1>
       <p>
@@ -28,7 +28,8 @@
       <a class="btn" href="https://wa.me/393312296579"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a><br><br>
       <a class="btn" href="https://t.me/munnizzaland_bot"><i class="fa-brands fa-telegram"></i> TELEGRAM</a>
     </div>
-    <div style="text-align: center; margin-top: 10px; font-size: 9px; position:fixed; bottom:0;left:0;width:100%;padding:20px 0">
+    <div
+      style="text-align: center; margin-top: 10px; font-size: 9px; position:fixed; bottom:0;left:0;width:100%;padding:20px 0">
       Munnizza.Land è un progetto
       <a href="https://github.com/yomi-digital/munnizza-land" target="_blank">open-source</a>
       realizzato da <a href="https://yomi.digital" target="_blank">YOMI</a>
@@ -98,66 +99,80 @@ export default {
   async mounted() {
     // Get URL
     const url = new URL(window.location.href);
-    console.log(url);
     if (url.hash === "#/privacy" || url.hash === "#/terms") {
       this.page = "privacy";
+    } else if (url.hash === "#/contribuisci") {
+      this.page = "contribute";
+    } else {
+      this.page = "map";
     }
-    // Downloading data from API
-    // Init map object
-    const maps = new Loader({
-      apiKey: import.meta.env.VITE_MAPS_KEY,
-      version: "weekly",
-      mapTypeId: 'satellite'
-    });
-    maps.load().then(async (google) => {
-      const map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 36.925935, lng: 14.739502 },
-        zoom: 10,
-      });
-      const markersDB = await axios.get(import.meta.env.VITE_API_URL + "/markers");
-      // Init map markers
-      const markers = [];
-      for (let k in markersDB.data) {
-        const marker = markersDB.data[k];
-        // Creating info window
-        const data =
-          new Date(marker.timestamp).getDate() +
-          "/" +
-          (new Date(marker.timestamp).getMonth() + 1) +
-          "/" +
-          new Date(marker.timestamp).getFullYear();
-        const infowindow = new google.maps.InfoWindow({
-          content:
-            `<div>
-          <img src="` +
-            marker.photo +
-            `" width="100%"><br><br>
-          Aggiunta in data: ` +
-            data +
-            `</div>`,
-        });
-        // Init marker
-        markers[marker._id] = new google.maps.Marker({
-          position: {
-            lat: marker.location.coordinates[1],
-            lng: marker.location.coordinates[0],
-          },
-          map: map,
-        });
-        // Attach info window
-        markers[marker._id].addListener("click", () => {
-          infowindow.open({
-            anchor: markers[marker._id],
-            map,
-          });
-        });
+  },
+  watch: {
+    page: function (val) {
+      if (val === "map") {
+        this.initMap();
       }
-    })
+    },
   },
   data() {
     return {
-      page: "map",
+      page: "",
     };
   },
+  methods: {
+    async initMap() {
+      // Downloading data from API
+      // Init map object
+      const maps = new Loader({
+        apiKey: import.meta.env.VITE_MAPS_KEY,
+        version: "weekly",
+        mapTypeId: 'satellite'
+      });
+      maps.load().then(async (google) => {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 36.925935, lng: 14.739502 },
+          zoom: 10,
+        });
+        const markersDB = await axios.get(import.meta.env.VITE_API_URL + "/markers");
+        // Init map markers
+        const markers = [];
+        for (let k in markersDB.data) {
+          const marker = markersDB.data[k];
+          // Creating info window
+          const data =
+            new Date(marker.timestamp).getDate() +
+            "/" +
+            (new Date(marker.timestamp).getMonth() + 1) +
+            "/" +
+            new Date(marker.timestamp).getFullYear();
+          const infowindow = new google.maps.InfoWindow({
+            content:
+              `<div>
+          <img src="` +
+              marker.photo +
+              `" width="100%"><br><br>
+          Aggiunta in data: ` +
+              data +
+              `</div>`,
+          });
+          // Init marker
+          markers[marker._id] = new google.maps.Marker({
+            position: {
+              lat: marker.location.coordinates[1],
+              lng: marker.location.coordinates[0],
+            },
+            map: map,
+          });
+          // Attach info window
+          markers[marker._id].addListener("click", () => {
+            infowindow.open({
+              anchor: markers[marker._id],
+              map,
+            });
+          });
+        }
+      })
+    }
+  }
 };
 </script>
