@@ -61,7 +61,6 @@ export async function processWebhook(req, res) {
                         req.body.entry[0].changes[0].value.messages[0].image
                     );
                     const fileId = req.body.entry[0].changes[0].value.messages[0].image.id
-                    await sendMessage(phone_number_id, user, "Ok, sto scaricando la tua foto..");
                     const media_details = await axios({
                         method: "GET",
                         url: "https://graph.facebook.com/v17.0/" + fileId + "/",
@@ -83,7 +82,16 @@ export async function processWebhook(req, res) {
                                     await sendMessage(phone_number_id, user, "C'è stato un problema con l'upload della foto, riprova!");
                                 } else {
                                     reports[phone_number_id].photo = process.env.PINATA_ENDPOINT + "/ipfs/" + uploaded
-                                    await sendMessage(phone_number_id, user, "Ok, ora allega la tua 📍 posizione, così da poterla accoppiare con la foto e geolocalizzare la discarica.");
+                                    const checkPhoto = await reportModel.findOne({ photo: reports[phone_number_id].photo })
+                                    if (checkPhoto === null) {
+                                        await sendMessage(phone_number_id, user, "Ok, ora allega la tua 📍 posizione, così da poterla accoppiare con la foto e geolocalizzare la discarica.");
+                                    } else {
+                                        await sendMessage(phone_number_id, user, "Questa foto è già stata segnalata, grazie per la collaborazione!")
+                                        reports[phone_number_id] = {
+                                            photo: "",
+                                            location: {}
+                                        }
+                                    }
                                 }
                             })
                             .on('error', async e => {
