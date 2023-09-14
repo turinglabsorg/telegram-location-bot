@@ -21,7 +21,7 @@
           href="https://github.com/yomi-digital/munnizza-land/tree/master/website">https://github.com/yomi-digital/munnizza-land</a>
       </p>
     </div>
-    <div class="content" v-if="page === 'contribute'" style="padding:5vh 30px">
+    <div class="content" v-if="page === 'contribute'" style="padding: 30px">
       <h1>Come funziona?</h1>
       Scegli la tua applicazione di messaggistica preferita e aggiungi il bot.<br><br>Invia una foto 📸 della discarica,
       invia la posizione 📍 subito dopo e aspetta la conferma, dopo massimo 24h vedrai la segnalazione!<br><br><br>
