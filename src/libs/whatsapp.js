@@ -82,6 +82,7 @@ export async function processWebhook(req, res) {
                                     await sendMessage(phone_number_id, user, "C'è stato un problema con l'upload della foto, riprova!");
                                 } else {
                                     reports[phone_number_id].photo = process.env.PINATA_ENDPOINT + "/ipfs/" + uploaded
+                                    const reportModel = mongoose.model('report', reportSchema);
                                     const checkPhoto = await reportModel.findOne({ photo: reports[phone_number_id].photo })
                                     if (checkPhoto === null) {
                                         await sendMessage(phone_number_id, user, "Ok, ora allega la tua 📍 posizione, così da poterla accoppiare con la foto e geolocalizzare la discarica.");
