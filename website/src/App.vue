@@ -2,10 +2,14 @@
   <div>
     <div style="position:relative; height: 70px;">
       <img src="/logo_h.png" style="height:50px; margin-top:5px; margin-left:10px" />
-      <a href="https://t.me/munnizzaland_bot"
-        style="position: absolute; top:0; right:0; padding:23px; font-size:13px; text-decoration: none; font-weight: bold;">CONTRIBUISCI</a>
+      <span @click="page = 'contribute'" v-if="page === 'map'" class="menu-btn">
+        CONTRIBUISCI
+      </span>
+      <span @click="page = 'map'" v-if="page === 'contribute'" class="menu-btn">
+        MAPPA
+      </span>
     </div>
-    <div id="map" v-if="page === 'map'"></div>
+    <div id="map" v-show="page === 'map'"></div>
     <div class="content" v-if="page === 'privacy'">
       <h1>Privacy Policy</h1>
       <p>
@@ -17,7 +21,14 @@
           href="https://github.com/yomi-digital/munnizza-land/tree/master/website">https://github.com/yomi-digital/munnizza-land</a>
       </p>
     </div>
-    <div style="text-align: center; margin-top: 10px; font-size: 10px">
+    <div class="content" v-if="page === 'contribute'" style="padding:5vh 30px">
+      <h1>Come funziona?</h1>
+      Scegli la tua applicazione di messaggistica preferita e aggiungi il bot.<br><br>Invia una foto 📸 della discarica,
+      invia la posizione 📍 subito dopo e aspetta la conferma, dopo massimo 24h vedrai la segnalazione!<br><br><br>
+      <a class="btn" href="https://wa.me/393312296579"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a><br><br>
+      <a class="btn" href="https://t.me/munnizzaland_bot"><i class="fa-brands fa-telegram"></i> TELEGRAM</a>
+    </div>
+    <div style="text-align: center; margin-top: 10px; font-size: 9px; position:fixed; bottom:0;left:0;width:100%;padding:20px 0">
       Munnizza.Land è un progetto
       <a href="https://github.com/yomi-digital/munnizza-land" target="_blank">open-source</a>
       realizzato da <a href="https://yomi.digital" target="_blank">YOMI</a>
@@ -36,7 +47,7 @@ html {
 
 .content {
   text-align: center;
-  padding:20px;
+  padding: 20px;
   height: calc(100vh - 170px);
 }
 
@@ -45,12 +56,36 @@ a {
   text-decoration: underline;
 }
 
+.btn {
+  padding: 20px;
+  text-decoration: none;
+  border: 1px solid #fff;
+  border-radius: 30px;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: #fff;
+  color: #499643;
+}
+
+.menu-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 23px;
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .button {
   font-family: "Roboto Mono", monospace !important;
 }
 
 #map {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 125px);
   border-radius: 10px;
 }
 </style>
