@@ -36,7 +36,7 @@
       </h1>
       <p>
         Segnala la discarica abusiva, invia la tua posizione e delle foto, in
-        modo completamente anonimo, tramite WhatsApp o Telegram.<br/> Contribuisci a
+        modo completamente anonimo, tramite WhatsApp o Telegram.<br/><br/> Contribuisci a
         mappare e risolvere il problema!
       </p>
      
