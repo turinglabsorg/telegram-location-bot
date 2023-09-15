@@ -35,12 +35,11 @@
         contro le discariche
       </h1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
-        sodales mattis mi, luctus dapibus nulla pretium vitae. Nam porta dolor
-        et vehicula hendrerit. Interdum et malesuada.
+        Segnala la discarica abusiva, invia la tua posizione e delle foto, in
+        modo completamente anonimo, tramite WhatsApp o Telegram.<br/> Contribuisci a
+        mappare e risolvere il problema!
       </p>
-      <h1 hidden>test</h1>
-
+     
 
       <div class="search-cnt">
         <input
