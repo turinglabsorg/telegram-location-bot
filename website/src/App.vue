@@ -16,7 +16,7 @@
           @click="page = 'contribute'"
         >
           <img src="../src/assets/img/flag_green.svg" draggable="false" />
-          <span class="menu-btn"> CONTRIBUISCI </span>
+          <span class="menu-btn" style="margin-left: -12px">CONTRIBUISCI</span>
         </button>
         <button
           class="flag-btn"
@@ -24,7 +24,9 @@
           @click="page = 'map'"
         >
           <img src="../src/assets/img/flag_black.svg" draggable="false" />
-          <span class="menu-btn" style="color: #afec00"> MAPPA </span>
+          <span class="menu-btn" style="color: #afec00; margin-left: 16px"
+            >MAPPA</span
+          >
         </button>
       </div>
     </header>
@@ -40,30 +42,6 @@
         Contribuisci a mappare e risolvere il problema!
       </p>
 
-      <!-- <div class="search-cnt">
-        <input
-          v-model="search"
-          type="text"
-          placeholder="Cerca nella tua zona..."
-          @input="handleSearch"
-        />
-        <button class="search-btn">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M13 12.3724L9.64799 9.02038C10.4535 8.05336 10.8552 6.81301 10.7695 5.55737C10.6838 4.30173 10.1173 3.12747 9.18782 2.27887C8.25838 1.43028 7.03756 0.972674 5.77932 1.00126C4.52108 1.02985 3.32231 1.54243 2.43237 2.43237C1.54243 3.32231 1.02985 4.52108 1.00126 5.77932C0.972674 7.03756 1.43028 8.25838 2.27887 9.18782C3.12747 10.1173 4.30173 10.6838 5.55737 10.7695C6.81301 10.8552 8.05336 10.4535 9.02038 9.64799L12.3724 13L13 12.3724ZM1.90359 5.89829C1.90359 5.10822 2.13787 4.33588 2.57682 3.67895C3.01576 3.02203 3.63965 2.51001 4.36959 2.20766C5.09952 1.90531 5.90273 1.82621 6.67762 1.98034C7.45252 2.13448 8.16431 2.51494 8.72298 3.07361C9.28165 3.63228 9.66211 4.34407 9.81625 5.11897C9.97038 5.89386 9.89128 6.69707 9.58893 7.427C9.28658 8.15694 8.77456 8.78083 8.11764 9.21977C7.46071 9.65872 6.68837 9.893 5.89829 9.893C4.83919 9.89183 3.82381 9.47058 3.07491 8.72168C2.32601 7.97278 1.90476 6.9574 1.90359 5.89829Z"
-              fill="white"
-              stroke="white"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
-      </div> -->
       <div class="search-cnt">
         <input
           type="text"
@@ -94,16 +72,23 @@
             position: absolute;
             right: 0;
             padding: 1rem 2rem;
-            color: #white;
+            color: white;
           "
         >
           X
         </div>
-        <div v-if="results">
+
+        <!-- TEST -->
+        <div
+          v-if="results"
+          style="position: absolute; right: 0; background-color: darkgreen"
+        >
           <div
             v-for="result in results"
             :key="result.id"
-            @click="searchMarkers(result.center)"
+            @click="selectCity(result)"
+            class="city-item"
+            style="cursor: pointer"
           >
             {{ result.place_name }}
           </div>
@@ -155,11 +140,11 @@
         <div class="contact-btns">
           <a class="flag-btn" href="https://wa.me/393312296579">
             <img src="./assets/img/flag_green.svg" alt="" draggable="false" />
-            <span>WHATSAPP </span>
+            <span style="margin-left: -12px">WHATSAPP </span>
           </a>
           <a class="flag-btn" href="https://t.me/munnizzaland_bot">
             <img src="./assets/img/flag_green.svg" alt="" draggable="false" />
-            <span>TELEGRAM</span>
+            <span style="margin-left: -12px">TELEGRAM</span>
           </a>
         </div>
       </div>
@@ -170,7 +155,7 @@
 </template>
 
 <script>
-//import axios from "axios";
+import axios from "axios";
 import Footer from "./components/Footer.vue";
 import mapboxgl from "mapbox-gl";
 
@@ -198,6 +183,10 @@ export default {
         this.initMap();
       }
     },
+    searcher: function () {
+      clearTimeout(this.searchDelay);
+      this.initSearch();
+    },
   },
 
   data() {
@@ -213,44 +202,79 @@ export default {
   },
 
   methods: {
+    selectCity(city) {
+      this.searchMarkers(city.center);
+      this.results = [];
+      this.searcher = "";
+    },
+
+    locateUser() {
+      const app = this;
+      const successCallback = (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        app.map.setCenter([longitude, latitude]);
+        app.map.setZoom(14);
+
+        console.log("User's location:", latitude, longitude);
+      };
+
+      const errorCallback = (error) => {
+        console.error("Error getting user's location:", error);
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          successCallback,
+          errorCallback
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    },
+
     async initMap() {
       mapboxgl.accessToken =
         "pk.eyJ1IjoieW9taS1kaWdpdGFsIiwiYSI6ImNsbWtkanR3ZjAxajUyaXRiZm93c2Vwb3kifQ.Tb-um50l1Y8rNByYuBs9ZA";
 
+      const mapContainer = document.getElementById("map");
+
+      while (mapContainer.firstChild) {
+        mapContainer.removeChild(mapContainer.firstChild);
+      }
+
       const map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/mapbox/light-v10", // Set the map style URL
-        center: [14.739502, 36.925935], // Set the initial center coordinates
-        zoom: 8, // Set the initial zoom level
+        style: "mapbox://styles/mapbox/light-v10",
+        center: [14.739502, 36.925935],
+        zoom: 8,
         pixelRatio: window.devicePixelRatio || 1,
       });
+
+      map.on("load", () => {
+        this.addMarkers(map); 
+      });
+
       const navigationControl = new mapboxgl.NavigationControl();
       map.addControl(navigationControl, "top-right");
 
-      // Add geolocation control
-      const geolocateControl = new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-      });
-      /* map.addControl(geolocateControl, "top-right"); */
-      this.addMarkers(map);
+      this.map = map; 
     },
+
     addMarkers(map) {
-      // Example marker data (replace with your own data)
       const markerData = [
         {
-          coordinates: [14.721916, 36.920323], // Marker coordinates [longitude, latitude]
+          coordinates: [14.721916, 36.920323], // Marker coordinates [long, lat]
           title: "RAGUSA",
           description: "RAGUSA DESC TEST",
         },
         {
-          coordinates: [14.552107, 36.794543], // Marker coordinates [longitude, latitude]
+          coordinates: [14.552107, 36.794543],
           title: "MARINA",
           description: "MARINA TEST",
         },
-        // Add more markers as needed
+        
       ];
 
       markerData.forEach((markerInfo) => {
@@ -258,44 +282,74 @@ export default {
           `<h3>${markerInfo.title}</h3><p>${markerInfo.description}</p>`
         );
 
-        // Create a new marker
         new mapboxgl.Marker()
           .setLngLat(markerInfo.coordinates)
-          .setPopup(popup) // Attach the popup
-          .addTo(map); // Add the marker to the map
+          .setPopup(popup)
+          .addTo(map);
       });
     },
-    /*  async initSearch() {
-      const app = this
+
+    async initSearch() {
+      const app = this;
       if (app.searcher.length > 3 && !app.searching) {
-        app.searching = true
-        const search = await axios.post(import.meta.env.VITE_API_URL + "/search", {
-          search: app.searcher + ", Sicily, Italy"
-        });
-        app.searching = false
-        console.log("Search results:", search.data)
-        if (search.data.results.features !== undefined) {
-          app.results = search.data.results.features
+        app.searching = true;
+        try {
+          const accessToken =
+            "pk.eyJ1IjoieW9taS1kaWdpdGFsIiwiYSI6ImNsbWtkanR3ZjAxajUyaXRiZm93c2Vwb3kifQ.Tb-um50l1Y8rNByYuBs9ZA";
+          const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${app.searcher}.json`;
+          const response = await axios.get(endpoint, {
+            params: {
+              access_token: accessToken,
+              country: "IT", // country code
+            },
+          });
+
+          const results = response.data.features.map((feature) => {
+            return {
+              place_name: feature.place_name,
+              center: feature.center,
+            };
+          });
+
+          app.results = results;
+        } catch (error) {
+          console.error("Error searching:", error);
+        } finally {
+          app.searching = false;
         }
       } else {
         app.searchDelay = setTimeout(function () {
-          app.initSearch()
-        }, 500)
+          app.initSearch();
+        }, 500);
       }
     },
+
     async searchMarkers(location) {
-      const app = this
-      app.results = []
-      const markersDB = await axios.post(import.meta.env.VITE_API_URL + "/search", {
-        location: location,
-        distance: 50000
-      });
-       const maps = new Loader({
-        apiKey: import.meta.env.VITE_MAPS_KEY,
-        version: "weekly",
-        mapTypeId: 'satellite'
-      });
-    } */
+      const app = this;
+      app.results = [];
+
+      try {
+        const accessToken =
+          "pk.eyJ1IjoieW9taS1kaWdpdGFsIiwiYSI6ImNsbWtkanR3ZjAxajUyaXRiZm93c2Vwb3kifQ.Tb-um50l1Y8rNByYuBs9ZA";
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${location[0]},${location[1]}.json`;
+        const response = await axios.get(endpoint, {
+          params: {
+            access_token: accessToken,
+          },
+        });
+
+        const results = response.data.features.map((feature) => {
+          return {
+            place_name: feature.place_name,
+            center: feature.center,
+          };
+        });
+
+        app.results = results;
+      } catch (error) {
+        console.error("Error searching markers:", error);
+      }
+    },
   },
 };
 </script>
