@@ -36,12 +36,11 @@
       </h1>
       <p>
         Segnala la discarica abusiva, invia la tua posizione e delle foto, in
-        modo completamente anonimo, tramite WhatsApp o Telegram.<br/><br/> Contribuisci a
-        mappare e risolvere il problema!
+        modo completamente anonimo, tramite WhatsApp o Telegram.<br /><br />
+        Contribuisci a mappare e risolvere il problema!
       </p>
-     
 
-      <div class="search-cnt">
+      <!-- <div class="search-cnt">
         <input
           v-model="search"
           type="text"
@@ -64,11 +63,57 @@
             />
           </svg>
         </button>
+      </div> -->
+      <div class="search-cnt">
+        <input
+          type="text"
+          placeholder="Cerca un indirizzo..."
+          v-model="searcher"
+        /><br />
+        <div
+          v-if="searching"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #000;
+            font-size: 10px;
+          "
+        >
+          ...
+        </div>
+        <div
+          v-if="searcher.length > 0"
+          @click="
+            initMap();
+            searcher = '';
+            results = [];
+          "
+          style="
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            padding: 1rem 2rem;
+            color: #white;
+            
+          "
+        >
+          X
+        </div>
+        <div v-if="results">
+          <div
+            v-for="result in results"
+            :key="result.id"
+            @click="searchMarkers(result.center)"
+          >
+            {{ result.place_name }}
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="content-cnt">
-      <div id="map" v-if="page === 'map'"></div>
+      <div id="map" v-show="page === 'map'"></div>
       <div class="content" v-if="page === 'privacy'">
         <h1>Privacy Policy</h1>
         <p>
@@ -111,9 +156,9 @@
 </template>
 
 <script>
-import axios from "axios";
-import { Loader } from "@googlemaps/js-api-loader";
+//import axios from "axios";
 import Footer from "./components/Footer.vue";
+import mapboxgl from "mapbox-gl";
 
 export default {
   name: "Home",
@@ -123,7 +168,6 @@ export default {
   },
 
   async mounted() {
-    // Get URL
     const url = new URL(window.location.href);
     if (url.hash === "#/privacy" || url.hash === "#/terms") {
       this.page = "privacy";
@@ -133,6 +177,7 @@ export default {
       this.page = "map";
     }
   },
+
   watch: {
     page: function (val) {
       if (val === "map") {
@@ -140,86 +185,104 @@ export default {
       }
     },
   },
+
   data() {
     return {
       page: "",
+      searcher: "",
+      searching: false,
+      searchDelay: null,
+      markers: [],
+      results: [],
+      map: null,
     };
   },
+
   methods: {
     async initMap() {
-      // Downloading data from API
-      // Init map object
-      const maps = new Loader({
-        apiKey: import.meta.env.VITE_MAPS_KEY,
-        version: "weekly",
-        mapTypeId: "satellite",
-      });
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoieW9taS1kaWdpdGFsIiwiYSI6ImNsbWtkanR3ZjAxajUyaXRiZm93c2Vwb3kifQ.Tb-um50l1Y8rNByYuBs9ZA";
 
-      const customMapStyle = [
-        {
-          featureType: "all",
-          elementType: "all",
-          stylers: [{ saturation: -100 }, { lightness: 0 }],
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/light-v10", // Set the map style URL
+        center: [14.739502, 36.925935], // Set the initial center coordinates
+        zoom: 8, // Set the initial zoom level
+        pixelRatio: window.devicePixelRatio || 1,
+      });
+      const navigationControl = new mapboxgl.NavigationControl();
+      map.addControl(navigationControl, "top-right");
+
+      // Add geolocation control
+      const geolocateControl = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
         },
+        trackUserLocation: true,
+      });
+      /* map.addControl(geolocateControl, "top-right"); */
+      this.addMarkers(map);
+    },
+    addMarkers(map) {
+      // Example marker data (replace with your own data)
+      const markerData = [
+        {
+          coordinates: [14.721916, 36.920323], // Marker coordinates [longitude, latitude]
+          title: "RAGUSA",
+          description: "RAGUSA DESC TEST",
+        },
+        {
+          coordinates: [14.552107, 36.794543], // Marker coordinates [longitude, latitude]
+          title: "MARINA",
+          description: "MARINA TEST",
+        },
+        // Add more markers as needed
       ];
 
-      const redMarkerIcon = {
-        url: "../src/assets/img/pin.svg",
-      };
-
-      maps.load().then(async (google) => {
-        const map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 36.925935, lng: 14.739502 },
-          zoom: 10,
-          styles: customMapStyle,
-        });
-
-        const markersDB = await axios.get(
-          import.meta.env.VITE_API_URL + "/markers"
+      markerData.forEach((markerInfo) => {
+        const popup = new mapboxgl.Popup().setHTML(
+          `<h3>${markerInfo.title}</h3><p>${markerInfo.description}</p>`
         );
 
-        // Init map markers
-        const markers = [];
-        for (let k in markersDB.data) {
-          const marker = markersDB.data[k];
-
-          // Creating info window
-          const data =
-            new Date(marker.timestamp).getDate() +
-            "/" +
-            (new Date(marker.timestamp).getMonth() + 1) +
-            "/" +
-            new Date(marker.timestamp).getFullYear();
-          const infowindow = new google.maps.InfoWindow({
-            content:
-              `<div>
-              <img src="` +
-              marker.photo +
-              `" width="100%"><br><br>
-              Aggiunta in data: ` +
-              data +
-              `</div>`,
-          });
-
-          markers[marker._id] = new google.maps.Marker({
-            position: {
-              lat: marker.location.coordinates[1],
-              lng: marker.location.coordinates[0],
-            },
-            map: map,
-            icon: redMarkerIcon,
-          });
-
-          // Attach info window
-          markers[marker._id].addListener("click", () => {
-            infowindow.open({
-              anchor: markers[marker._id],
-              map,
-            });
-          });
-        }
+        // Create a new marker
+        new mapboxgl.Marker()
+          .setLngLat(markerInfo.coordinates)
+          .setPopup(popup) // Attach the popup
+          .addTo(map); // Add the marker to the map
       });
     },
+    /*  async initSearch() {
+      const app = this
+      if (app.searcher.length > 3 && !app.searching) {
+        app.searching = true
+        const search = await axios.post(import.meta.env.VITE_API_URL + "/search", {
+          search: app.searcher + ", Sicily, Italy"
+        });
+        app.searching = false
+        console.log("Search results:", search.data)
+        if (search.data.results.features !== undefined) {
+          app.results = search.data.results.features
+        }
+      } else {
+        app.searchDelay = setTimeout(function () {
+          app.initSearch()
+        }, 500)
+      }
+    },
+    async searchMarkers(location) {
+      const app = this
+      app.results = []
+      const markersDB = await axios.post(import.meta.env.VITE_API_URL + "/search", {
+        location: location,
+        distance: 50000
+      });
+       const maps = new Loader({
+        apiKey: import.meta.env.VITE_MAPS_KEY,
+        version: "weekly",
+        mapTypeId: 'satellite'
+      });
+    } */
   },
 };
 </script>
+

@@ -16,6 +16,7 @@ html {
   background: var(--bg);
   min-height: 100vh;
   /* overflow: hidden; */
+  overflow-y: auto;
   color: #fff;
   font-family: var(--texts);
   font-weight: normal;
@@ -67,7 +68,7 @@ header {
     font-weight: 600;
   }
 
-  .logo{
+  .logo {
     height: 50px;
   }
 
@@ -205,4 +206,10 @@ footer {
     cursor: pointer;
     text-decoration: underline;
   }
+}
+
+.mapboxgl-canvas {
+  width: 100% !important; 
+  height: 100% !important;
+  object-fit: cover;
 }
