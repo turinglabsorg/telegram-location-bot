@@ -23,8 +23,8 @@
           v-if="page === 'contribute'"
           @click="page = 'map'"
         >
-          <img src="../src/assets/img/flag_green.svg" draggable="false" />
-          <span class="menu-btn"> MAPPA </span>
+          <img src="../src/assets/img/flag_black.svg" draggable="false" />
+          <span class="menu-btn" style="color: #afec00"> MAPPA </span>
         </button>
       </div>
     </header>
@@ -95,7 +95,6 @@
             right: 0;
             padding: 1rem 2rem;
             color: #white;
-            
           "
         >
           X
@@ -131,23 +130,38 @@
       <div class="content" v-if="page === 'contribute'" style="padding: 30px">
         <h1>Come funziona?</h1>
         <p>
-          Scegli la tua applicazione di messaggistica preferita e clicca per
-          iniziare la chat 💬.
+          <span class="num">1.</span> Scegli la tua applicazione di
+          messaggistica preferita e clicca per iniziare la chat.
+          <span class="icon">
+            <img src="./assets/img/howto_txt.svg" alt="" />
+          </span>
         </p>
 
         <p>
-          Tramite la chat potrai inviare la foto 📸 e la posizione 📍 della
-          segnalazione!
+          <span class="icon">
+            <img src="./assets/img/howto_ph.svg" alt="" />
+          </span>
+          <span class="num">2.</span>Tramite la chat potrai inviare la foto e la
+          posizione della segnalazione!
         </p>
         <p>
-          Entro massimo 24h vedrai aggiunta la posizione sulla mappa!<br /><br /><br />
+          <span class="num">3.</span> Entro massimo 24h vedrai aggiunta la
+          posizione sulla mappa!
+          <span class="icon">
+            <img src="./assets/img/howto_mark.svg" alt="" />
+          </span>
+          <br /><br /><br />
         </p>
-        <a class="btn" href="https://wa.me/393312296579"
-          ><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a
-        ><br /><br />
-        <a class="btn" href="https://t.me/munnizzaland_bot"
-          ><i class="fa-brands fa-telegram"></i> TELEGRAM</a
-        >
+        <div class="contact-btns">
+          <a class="flag-btn" href="https://wa.me/393312296579">
+            <img src="./assets/img/flag_green.svg" alt="" draggable="false" />
+            <span>WHATSAPP </span>
+          </a>
+          <a class="flag-btn" href="https://t.me/munnizzaland_bot">
+            <img src="./assets/img/flag_green.svg" alt="" draggable="false" />
+            <span>TELEGRAM</span>
+          </a>
+        </div>
       </div>
     </div>
 

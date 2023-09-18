@@ -5,8 +5,7 @@
 }
 
 :root {
-  --titles: "TT Firs Neue";
-  --texts: "TT Norms";
+  --texts: "TT Firs Neue";
   --bg: #499643;
   --color-accent: #adec01;
 }
@@ -64,49 +63,75 @@ header {
     text-decoration: none;
     font-weight: bold;
     color: black;
-    font-family: var(--titles);
     font-weight: 600;
   }
 
   .logo {
     height: 50px;
   }
+}
 
-  .flag-btn {
-    all: unset;
-    cursor: pointer;
+.flag-btn {
+  all: unset;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    position: absolute;
+    z-index: 3;
+  }
+
+  img {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    span {
-      position: absolute;
-      z-index: 3;
-    }
-
-    img {
-      position: relative;
-      z-index: 2;
-    }
+    z-index: 2;
   }
 }
 
 .content-cnt {
   padding: 0 1rem;
   padding-bottom: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adec01;
 
   .content {
     h1 {
       margin-bottom: 2rem;
-      font-family: var(--titles);
       font-size: 3.375rem;
       line-height: 1;
+      font-weight: 700;
+      color: white;
+    }
+
+    .num {
+      font-weight: 700;
+    }
+
+    .icon {
+      padding: 0 1rem;
     }
 
     p {
       margin-bottom: 1.5rem;
       font-size: 1.25rem;
+      font-weight: 400;
+    }
+  }
+
+  .contact-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flag-btn {
+    padding: 0 2rem;
+    span {
+      color: black;
     }
   }
 }
@@ -133,7 +158,6 @@ header {
     font-weight: 700;
     line-height: 1;
     margin-bottom: 3rem;
-    font-family: var(--titles);
   }
 
   p {
@@ -209,7 +233,7 @@ footer {
 }
 
 .mapboxgl-canvas {
-  width: 100% !important; 
+  width: 100% !important;
   height: 100% !important;
   object-fit: cover;
 }
