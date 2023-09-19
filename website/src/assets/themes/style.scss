@@ -185,9 +185,10 @@ header {
     input {
       width: 100%;
       padding: 1rem;
-      font-family: var(--texts);
-      border-radius: 0.5625rem;
       border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0.5625rem;
+      height: 3.125rem;
+      font-family: var(--texts);
       background: linear-gradient(
         270deg,
         rgba(175, 236, 0, 0.22) 0%,
@@ -246,4 +247,58 @@ footer {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
+}
+
+.results-cnt {
+  position: absolute;
+  top: 3.5rem;
+  right: 0;
+  width: 100%;
+  background: #f7f7f7;
+  z-index: 9999;
+  border-radius: 10px;
+  border-radius: 0.5625rem;
+  color: black;
+
+  .city-item {
+    padding: 0.5rem 0;
+    cursor: pointer;
+    border-bottom: 1px solid #8f8f8f2b;
+    transition: 0.2s ease-in-out;
+
+    &:nth-child(1) {
+      border-radius: 0.5625rem 0.5625rem 0 0;
+    }
+    &:nth-last-child(1) {
+      border: none;
+      border-radius: 0 0 0.5625rem 0.5625rem;
+    }
+
+    &:hover {
+      background-color: #adec016d;
+    }
+  }
+}
+
+.mapboxgl-popup-content {
+  width: fit-content;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+  color: black;
+
+  h3 {
+    color: black;
+    font-family: var(--texts);
+  }
+  .mapboxgl-popup-close-button {
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+}
+.desc-pic {
+  aspect-ratio: 5/3;
+  max-width: 400px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
 }

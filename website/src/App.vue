@@ -1,17 +1,32 @@
 <template>
   <div class="home">
-    <header style=" height: 70px">
+    <header style="height: 70px">
       <div class="logo-cnt">
-        <img src="/logo_h.png" style="margin-top: 5px; margin-left: 10px" draggable="false" class="logo" />
+        <img
+          src="/logo_h.png"
+          style="margin-top: 5px; margin-left: 10px"
+          draggable="false"
+          class="logo"
+        />
       </div>
       <div class="btn-cnt">
-        <button class="flag-btn" v-if="page === 'map'" @click="page = 'contribute'">
+        <button
+          class="flag-btn"
+          v-if="page === 'map'"
+          @click="page = 'contribute'"
+        >
           <img src="../src/assets/img/flag_green.svg" draggable="false" />
           <span class="menu-btn" style="margin-left: -12px">CONTRIBUISCI</span>
         </button>
-        <button class="flag-btn" v-if="page === 'contribute'" @click="page = 'map'">
+        <button
+          class="flag-btn"
+          v-if="page === 'contribute'"
+          @click="page = 'map'"
+        >
           <img src="../src/assets/img/flag_black.svg" draggable="false" />
-          <span class="menu-btn" style="color: #afec00; margin-left: 16px">MAPPA</span>
+          <span class="menu-btn" style="color: #afec00; margin-left: 16px"
+            >MAPPA</span
+          >
         </button>
       </div>
     </header>
@@ -28,34 +43,49 @@
       </p>
 
       <div class="search-cnt">
-        <input type="text" placeholder="Cerca un indirizzo..." v-model="searcher" /><br />
-        <div v-if="searching" style="
+        <input
+          type="text"
+          placeholder="Cerca un indirizzo..."
+          v-model="searcher"
+        /><br />
+        <div
+          v-if="searching"
+          style="
             position: absolute;
             top: 10px;
             right: 10px;
             color: #000;
             font-size: 10px;
-          ">
+          "
+        >
           ...
         </div>
-        <div v-if="searcher.length > 0" @click="
-          initMap();
-        searcher = '';
-        results = [];
-        " style="
+        <div
+          v-if="searcher.length > 0"
+          @click="
+            initMap();
+            searcher = '';
+            results = [];
+          "
+          style="
             cursor: pointer;
             position: absolute;
             right: 0;
             padding: 1rem 2rem;
             color: white;
-          ">
+          "
+        >
           X
         </div>
 
-        <!-- TEST -->
-        <div v-if="results" style="position: absolute; right: 0; background-color: darkgreen">
-          <div v-for="result in results" :key="result.id" @click="selectCity(result)" class="city-item"
-            style="cursor: pointer">
+        <div v-if="results" class="results-cnt">
+          <div
+            v-for="result in results"
+            :key="result.id"
+            @click="selectCity(result)"
+            class="city-item"
+            style="cursor: pointer"
+          >
             {{ result.place_name }}
           </div>
         </div>
@@ -73,7 +103,9 @@
           We don't use any other tracking software, period.<br /><br />
           Check by your own at
           <a
-            href="https://github.com/yomi-digital/munnizza-land/tree/master/website">https://github.com/yomi-digital/munnizza-land</a>
+            href="https://github.com/yomi-digital/munnizza-land/tree/master/website"
+            >https://github.com/yomi-digital/munnizza-land</a
+          >
         </p>
       </div>
       <div class="content" v-if="page === 'contribute'">
@@ -172,6 +204,8 @@ export default {
       this.searchMarkers(city.center);
       this.results = [];
       this.searcher = "";
+      this.map.setCenter(city.center);
+      this.map.setZoom(10);
     },
 
     locateUser() {
@@ -202,7 +236,7 @@ export default {
 
     async initMap() {
       mapboxgl.accessToken = import.meta.env.VITE_MAPS_KEY;
-      const app = this
+      const app = this;
       app.map = new mapboxgl.Map({
         container: "map",
         style: "mapbox://styles/mapbox/light-v10",
@@ -210,8 +244,8 @@ export default {
         zoom: 8,
       });
       setTimeout(function () {
-        app.addMarkers(app.map)
-      }, 500)
+        app.addMarkers(app.map);
+      }, 500);
     },
 
     addMarkers(map) {
@@ -219,18 +253,18 @@ export default {
         {
           coordinates: [14.721916, 36.920323], // Marker coordinates [long, lat]
           title: "RAGUSA",
-          description: "RAGUSA DESC TEST",
+          description: `
+          <img src="../src/assets/img/test_pic.png" alt="desc" class="desc-pic" />`,
         },
         {
           coordinates: [14.552107, 36.794543],
           title: "MARINA",
-          description: "MARINA TEST",
+          description: "no pic provided",
         },
-
       ];
 
       markerData.forEach((markerInfo) => {
-        console.log("Adding marker", markerInfo)
+        console.log("Adding marker", markerInfo);
         const popup = new mapboxgl.Popup().setHTML(
           `<h3>${markerInfo.title}</h3><p>${markerInfo.description}</p>`
         );
