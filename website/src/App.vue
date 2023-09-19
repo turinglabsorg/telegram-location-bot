@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <header style="position: relative; height: 70px">
+    <header style=" height: 70px">
       <div class="logo-cnt">
         <img
           src="/logo_h.png"
@@ -112,7 +112,7 @@
           >
         </p>
       </div>
-      <div class="content" v-if="page === 'contribute'" style="padding: 30px">
+      <div class="content" v-if="page === 'contribute'">
         <h1>Come funziona?</h1>
         <p>
           <span class="num">1.</span> Scegli la tua applicazione di
@@ -124,7 +124,7 @@
 
         <p>
           <span class="icon">
-            <img src="./assets/img/howto_ph.svg" alt="" />
+            <img src="./assets/img/howto_ph.svg" alt="" class="ph-icon"/>
           </span>
           <span class="num">2.</span>Tramite la chat potrai inviare la foto e la
           posizione della segnalazione!
