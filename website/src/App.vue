@@ -270,13 +270,13 @@ export default {
           `<h3>${markerInfo.title}</h3><p>${markerInfo.description}</p>`
         );
 
-        const customMarker = document.createElement("div");
+        /* const customMarker = document.createElement("div");
         customMarker.className = "custom-marker";
         customMarker.innerHTML = `
       <img src="${"../src/assets/img/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
-    `;
+    `; */
 
-        new mapboxgl.Marker(customMarker)
+        new mapboxgl.Marker()
           .setLngLat(markerInfo.coordinates)
           .setPopup(popup)
           .addTo(map);
