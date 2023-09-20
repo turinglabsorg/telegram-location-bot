@@ -196,6 +196,7 @@ export default {
       markers: [],
       results: [],
       map: null,
+      
     };
   },
 
@@ -269,7 +270,13 @@ export default {
           `<h3>${markerInfo.title}</h3><p>${markerInfo.description}</p>`
         );
 
-        new mapboxgl.Marker()
+        const customMarker = document.createElement("div");
+        customMarker.className = "custom-marker";
+        customMarker.innerHTML = `
+      <img src="${"../src/assets/img/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
+    `;
+
+        new mapboxgl.Marker(customMarker)
           .setLngLat(markerInfo.coordinates)
           .setPopup(popup)
           .addTo(map);
