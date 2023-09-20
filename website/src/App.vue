@@ -255,7 +255,7 @@ export default {
           coordinates: [14.721916, 36.920323], // Marker coordinates [long, lat]
           title: "RAGUSA",
           description: `
-          <img src="../src/assets/img/test_pic.png" alt="desc" class="desc-pic" />`,
+          <img src="/test_pic.png" alt="desc" class="desc-pic" />`,
         },
         {
           coordinates: [14.552107, 36.794543],
