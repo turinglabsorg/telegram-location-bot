@@ -273,7 +273,7 @@ export default {
         const customMarker = document.createElement("div");
         customMarker.className = "custom-marker";
         customMarker.innerHTML = `
-      <img src="${"../public/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
+      <img src="${"/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
     `;
 
         new mapboxgl.Marker(customMarker)
