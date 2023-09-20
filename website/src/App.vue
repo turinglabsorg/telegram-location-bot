@@ -91,7 +91,6 @@
         </div>
       </div>
     </div>
-
     <div class="content-cnt">
       <div id="map" v-show="page === 'map'"></div>
       <div class="content" v-if="page === 'privacy'">
@@ -145,6 +144,7 @@
         </div>
       </div>
     </div>
+    
 
     <Footer />
   </div>
@@ -273,7 +273,7 @@ export default {
         const customMarker = document.createElement("div");
         customMarker.className = "custom-marker";
         customMarker.innerHTML = `
-      <img src="${"../src/assets/img/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
+      <img src="${"../public/custom_marker_1.svg"}" alt="Marker" class="custom-marker-img">
     `;
 
         new mapboxgl.Marker(customMarker)
