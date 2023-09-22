@@ -2,6 +2,7 @@
   .title-cnt h1,
   .content-cnt .content h1 {
     font-size: calc(2rem + 2vw);
+    margin-top: 25px;
   }
 
   .title-cnt p,
@@ -26,6 +27,7 @@
 
 @media screen and (max-width: 424px) {
   header {
+    padding: 1rem;
     .logo-cnt img {
       height: 40px;
     }
