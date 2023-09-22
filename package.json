@@ -4,8 +4,10 @@
   "description": "A simple bot that accepts a location",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon bot.js"
+    "dev": "nodemon ./src/bot.js",
+    "start": "node ./src/bot.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/turinglabsorg/telegram-location-bot.git"
@@ -18,13 +20,19 @@
   "homepage": "https://github.com/turinglabsorg/telegram-location-bot#readme",
   "dependencies": {
     "axios": "^0.21.1",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.13.2",
+    "form-data": "^4.0.0",
+    "mongoose": "^7.5.0",
+    "node-sass": "^9.0.0",
     "staticmaps": "^1.5.1",
-    "telegraf": "^4.4.0"
+    "stream": "^0.0.2",
+    "telegraf": "^4.4.0",
+    "telegram-keyboard": "^2.2.6"
   },
   "devDependencies": {
-    "nodemon": "^2.0.9"
+    "nodemon": "^2.0.9",
+    "sass": "^1.67.0"
   }
 }
